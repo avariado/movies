@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Filmes</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.4;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .search-section {
+            margin: 10px 0;
+        }
+        
+        .search-row {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .search-input-container {
+            flex: 1;
+        }
+        
+        .search-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .search-buttons button {
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        
+        .left-buttons, .right-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        
+        .table-container {
+            margin-top: 15px;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 0.9rem;
+        }
+        
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        th:nth-child(1), td:nth-child(1) {
+            width: 50%;
+        }
+        
+        th:nth-child(2), td:nth-child(2) {
+            width: 30%;
+        }
+        
+        th:nth-child(3), td:nth-child(3) {
+            width: 20%;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            resize: horizontal;
+            overflow: auto;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        th:hover {
+            background-color: #e9ecef;
+        }
+        
+        th.sort-asc::after,
+        th.sort-desc::after {
+            content: "";
+            position: absolute;
+            right: 10px;
+            font-size: 10px;
+        }
+        
+        th.sort-asc::after {
+            content: "▲";
+        }
+        
+        th.sort-desc::after {
+            content: "▼";
+        }
+        
+        tbody tr {
+            height: 35px;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .selected {
+            background-color: #e8d6e1 !important;
+        }
+        
+        .search-highlight {
+            background-color: #fff3cd;
+            font-weight: bold;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+        }
+        
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .search-status {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .left-buttons, .right-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            button {
+                width: auto;
+                flex: 1;
+            }
+            
+            .search-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .search-buttons {
+                width: 100%;
+            }
+            
+            .search-buttons button {
+                flex: 1;
+            }
+            
+            table {
+                table-layout: auto;
+            }
+            
+            th:nth-child(1), td:nth-child(1),
+            th:nth-child(2), td:nth-child(2),
+            th:nth-child(3), td:nth-child(3) {
+                width: auto;
+            }
+            
+            th {
+                resize: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciador de Filmes</h1>
+        
+        <div id="alert-container"></div>
+        
+        <div class="form-group">
+            <label for="movie-name">Título do Filme:</label>
+            <input type="text" id="movie-name" placeholder="Digite o título do filme">
+        </div>
+        
+        <div class="form-group">
+            <label for="actor-name">Ator Principal:</label>
+            <input type="text" id="actor-name" placeholder="Digite o nome do ator principal">
+        </div>
+        
+        <div class="form-group">
+            <label for="year">Ano:</label>
+            <input type="text" id="year" placeholder="Digite o ano de lançamento">
+        </div>
+        
+        <div class="search-section">
+            <label for="search-input">Pesquisar:</label>
+            <div class="search-row">
+                <div class="search-input-container">
+                    <input type="text" id="search-input" placeholder="Digite um termo para pesquisar">
+                </div>
+                <div class="search-buttons">
+                    <button class="btn-info" id="prev-result">Anterior</button>
+                    <button class="btn-info" id="next-result">Seguinte</button>
+                </div>
+            </div>
+            <div id="search-status" class="search-status"></div>
+        </div>
+        
+        <div class="button-group">
+            <div class="left-buttons">
+                <button class="btn-info" id="add-movie">Adicionar Filme</button>
+                <button class="btn-info" id="remove-movie">Remover Selecionado</button>
+                <button class="btn-info" id="clear-fields">Limpar</button>
+                <button class="btn-info" id="export-txt">Gerar Lista</button>
+            </div>
+            <div class="right-buttons">
+                <button class="btn-info" id="import-json">Importar</button>
+                <button class="btn-info" id="export-json">Exportar</button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="movies-table">
+                <thead>
+                    <tr>
+                        <th data-column="movie">Título do Filme</th>
+                        <th data-column="actor">Ator Principal</th>
+                        <th data-column="year">Ano</th>
+                    </tr>
+                </thead>
+                <tbody id="movies-tbody">
+                    <!-- Os filmes serão inseridos aqui dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+        
+        <input type="file" id="file-input" class="file-input" accept=".json">
+    </div>
+
+    <script>
+        class MovieManager {
+            constructor() {
+                this.movies = [];
+                this.sortReverse = false;
+                this.currentSortColumn = null;
+                this.selectedRow = null;
+                this.searchResults = [];
+                this.currentSearchIndex = -1;
+                this.searchTerm = '';
+                
+                this.initializeElements();
+                this.attachEventListeners();
+                this.autoLoadFromLocalStorage();
+            }
+            
+            initializeElements() {
+                this.movieNameInput = document.getElementById('movie-name');
+                this.actorNameInput = document.getElementById('actor-name');
+                this.yearInput = document.getElementById('year');
+                this.searchInput = document.getElementById('search-input');
+                this.prevResultButton = document.getElementById('prev-result');
+                this.nextResultButton = document.getElementById('next-result');
+                this.searchStatus = document.getElementById('search-status');
+                this.moviesTbody = document.getElementById('movies-tbody');
+                this.alertContainer = document.getElementById('alert-container');
+                this.fileInput = document.getElementById('file-input');
+                this.tableHeaders = document.querySelectorAll('#movies-table th');
+            }
+            
+            attachEventListeners() {
+                document.getElementById('add-movie').addEventListener('click', () => this.addMovie());
+                document.getElementById('remove-movie').addEventListener('click', () => this.removeMovie());
+                document.getElementById('clear-fields').addEventListener('click', () => this.clearFields());
+                document.getElementById('import-json').addEventListener('click', () => this.importJson());
+                document.getElementById('export-json').addEventListener('click', () => this.exportJson());
+                document.getElementById('export-txt').addEventListener('click', () => this.exportTxt());
+                
+                this.prevResultButton.addEventListener('click', () => this.previousResult());
+                this.nextResultButton.addEventListener('click', () => this.nextResult());
+                this.searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.searchMovies();
+                });
+                
+                this.fileInput.addEventListener('change', (e) => this.handleFileImport(e));
+                
+                this.tableHeaders.forEach(header => {
+                    header.addEventListener('click', () => this.sortColumn(header.dataset.column));
+                });
+            }
+            
+            showAlert(message, type = 'success') {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type}`;
+                alertDiv.textContent = message;
+                
+                this.alertContainer.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }
+            
+            clearFields() {
+                this.movieNameInput.value = '';
+                this.actorNameInput.value = '';
+                this.yearInput.value = '';
+                this.searchInput.value = '';
+                this.selectedRow = null;
+                this.clearTableSelection();
+                this.clearSearch();
+            }
+            
+            clearSearch() {
+                this.searchResults = [];
+                this.currentSearchIndex = -1;
+                this.searchTerm = '';
+                this.searchStatus.textContent = '';
+                this.updateTable();
+                document.title = "Gerenciador de Filmes";
+            }
+            
+            addMovie() {
+                const movie = this.movieNameInput.value.trim();
+                const actor = this.actorNameInput.value.trim();
+                const yearStr = this.yearInput.value.trim();
+                
+                if (!movie || !actor || !yearStr) {
+                    this.showAlert('Por favor, preencha todos os campos.', 'warning');
+                    return;
+                }
+                
+                let year;
+                try {
+                    year = parseInt(yearStr);
+                    if (isNaN(year) || year < 1888 || year > 2100) {
+                        throw new Error('Ano inválido');
+                    }
+                } catch (error) {
+                    this.showAlert('Por favor, insira um ano válido.', 'warning');
+                    return;
+                }
+                
+                const movieData = {
+                    movie: movie,
+                    actor: actor,
+                    year: year
+                };
+                
+                this.movies.push(movieData);
+                this.updateTable();
+                this.clearFields();
+                this.saveToLocalStorage();
+            }
+            
+            removeMovie() {
+                if (this.selectedRow === null) {
+                    this.showAlert('Por favor, selecione um filme para remover.', 'warning');
+                    return;
+                }
+                
+                const index = this.selectedRow.dataset.index;
+                if (index >= 0 && index < this.movies.length) {
+                    this.movies.splice(index, 1);
+                    this.updateTable();
+                    this.clearFields();
+                    this.saveToLocalStorage();
+                }
+            }
+            
+            updateTable() {
+                this.moviesTbody.innerHTML = '';
+                
+                this.movies.forEach((movie, index) => {
+                    const row = document.createElement('tr');
+                    row.dataset.index = index;
+                    
+                    const movieCell = document.createElement('td');
+                    movieCell.textContent = movie.movie;
+                    
+                    const actorCell = document.createElement('td');
+                    actorCell.textContent = movie.actor;
+                    
+                    const yearCell = document.createElement('td');
+                    yearCell.textContent = movie.year;
+                    
+                    if (this.searchTerm && this.searchResults.includes(index)) {
+                        this.highlightSearchTerm(movieCell, movie.movie);
+                        this.highlightSearchTerm(actorCell, movie.actor);
+                        this.highlightSearchTerm(yearCell, movie.year.toString());
+                    }
+                    
+                    row.appendChild(movieCell);
+                    row.appendChild(actorCell);
+                    row.appendChild(yearCell);
+                    
+                    row.addEventListener('click', () => {
+                        this.clearTableSelection();
+                        row.classList.add('selected');
+                        this.selectedRow = row;
+                        this.fillFormWithMovieData(movie);
+                        this.clearSearch();
+                    });
+                    
+                    this.moviesTbody.appendChild(row);
+                });
+                
+                // Destacar resultado da pesquisa atual (se houver pesquisa ativa)
+                if (this.currentSearchIndex >= 0 && this.currentSearchIndex < this.searchResults.length) {
+                    const currentIndex = this.searchResults[this.currentSearchIndex];
+                    const rows = this.moviesTbody.querySelectorAll('tr');
+                    if (rows[currentIndex]) {
+                        rows[currentIndex].classList.add('selected');
+                        this.selectedRow = rows[currentIndex];
+                        rows[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+                // Se não há pesquisa ativa, manter a seleção anterior (se houver)
+                else if (this.selectedRow !== null) {
+                    const index = this.selectedRow.dataset.index;
+                    const rows = this.moviesTbody.querySelectorAll('tr');
+                    if (rows[index]) {
+                        rows[index].classList.add('selected');
+                        this.selectedRow = rows[index];
+                    }
+                }
+            }
+            
+            highlightSearchTerm(cell, text) {
+                if (!this.searchTerm) return;
+                
+                const regex = new RegExp(`(${this.searchTerm})`, 'gi');
+                const highlightedText = text.replace(regex, '<span class="search-highlight">$1</span>');
+                cell.innerHTML = highlightedText;
+            }
+            
+            clearTableSelection() {
+                const rows = this.moviesTbody.querySelectorAll('tr');
+                rows.forEach(row => row.classList.remove('selected'));
+                this.selectedRow = null;
+            }
+            
+            fillFormWithMovieData(movie) {
+                this.movieNameInput.value = movie.movie;
+                this.actorNameInput.value = movie.actor;
+                this.yearInput.value = movie.year;
+            }
+            
+            searchMovies() {
+                this.searchTerm = this.searchInput.value.trim().toLowerCase();
+                if (!this.searchTerm) {
+                    this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
+                    return;
+                }
+                
+                // Limpar seleção anterior quando iniciar nova pesquisa
+                this.clearTableSelection();
+                
+                this.searchResults = [];
+                
+                this.movies.forEach((movie, index) => {
+                    if (movie.movie.toLowerCase().includes(this.searchTerm) || 
+                        movie.actor.toLowerCase().includes(this.searchTerm) || 
+                        movie.year.toString().includes(this.searchTerm)) {
+                        this.searchResults.push(index);
+                    }
+                });
+                
+                if (this.searchResults.length === 0) {
+                    this.showAlert('Nenhum resultado encontrado.', 'info');
+                    this.currentSearchIndex = -1;
+                    this.searchStatus.textContent = 'Nenhum resultado encontrado';
+                    return;
+                }
+                
+                this.currentSearchIndex = 0;
+                this.highlightSearchResult();
+            }
+            
+            highlightSearchResult() {
+                if (this.searchResults.length === 0 || this.currentSearchIndex < 0) return;
+                
+                this.updateTable();
+                this.searchStatus.textContent = `Resultado ${this.currentSearchIndex + 1} de ${this.searchResults.length}`;
+                document.title = `Gerenciador de Filmes - Resultado ${this.currentSearchIndex + 1} de ${this.searchResults.length}`;
+                
+                const movieIndex = this.searchResults[this.currentSearchIndex];
+                const movie = this.movies[movieIndex];
+                this.fillFormWithMovieData(movie);
+            }
+            
+			nextResult() {
+				// Se não há pesquisa ativa, realizar uma nova pesquisa
+				if (this.searchResults.length === 0) {
+					this.searchMovies();
+					return;
+				}
+				
+				if (this.currentSearchIndex < this.searchResults.length - 1) {
+					this.currentSearchIndex++;
+					this.highlightSearchResult();
+				} else {
+					// this.showAlert('Último resultado alcançado.', 'info');
+				}
+			}
+
+			previousResult() {
+				// Se não há pesquisa ativa, realizar uma nova pesquisa
+				if (this.searchResults.length === 0) {
+					this.searchMovies();
+					return;
+				}
+				
+				if (this.currentSearchIndex > 0) {
+					this.currentSearchIndex--;
+					this.highlightSearchResult();
+				} else {
+					// this.showAlert('Primeiro resultado alcançado.', 'info');
+				}
+			}
+            
+            sortColumn(column) {
+                if (this.currentSortColumn === column) {
+                    this.sortReverse = !this.sortReverse;
+                } else {
+                    this.sortReverse = false;
+                    this.currentSortColumn = column;
+                }
+                
+                this.tableHeaders.forEach(header => {
+                    header.classList.remove('sort-asc', 'sort-desc');
+                    if (header.dataset.column === column) {
+                        header.classList.add(this.sortReverse ? 'sort-desc' : 'sort-asc');
+                    }
+                });
+                
+                if (column === 'year') {
+                    this.movies.sort((a, b) => {
+                        return this.sortReverse ? b[column] - a[column] : a[column] - b[column];
+                    });
+                } else {
+                    this.movies.sort((a, b) => {
+                        const aValue = a[column].toLowerCase();
+                        const bValue = b[column].toLowerCase();
+                        
+                        if (aValue < bValue) return this.sortReverse ? 1 : -1;
+                        if (aValue > bValue) return this.sortReverse ? -1 : 1;
+                        return 0;
+                    });
+                }
+                
+                this.updateTable();
+            }
+            
+            importJson() {
+                this.fileInput.click();
+            }
+            
+            handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (Array.isArray(data)) {
+                            const validMovies = [];
+                            for (const item of data) {
+                                if (typeof item === 'object' && 
+                                    'movie' in item && 
+                                    'actor' in item && 
+                                    'year' in item) {
+                                    validMovies.push(item);
+                                }
+                            }
+                            
+                            this.movies = validMovies;
+                            this.updateTable();
+                            this.saveToLocalStorage();
+                            this.showAlert(`${validMovies.length} filmes importados com sucesso!`);
+                        } else {
+                            this.showAlert('Formato de arquivo inválido. Esperado uma lista de filmes.', 'danger');
+                        }
+                    } catch (error) {
+                        this.showAlert(`Erro ao importar arquivo: ${error.message}`, 'danger');
+                    }
+                    
+                    this.fileInput.value = '';
+                };
+                
+                reader.readAsText(file);
+            }
+            
+            exportJson() {
+                if (this.movies.length === 0) {
+                    this.showAlert('Não há filmes para exportar.', 'warning');
+                    return;
+                }
+                
+                const dataStr = JSON.stringify(this.movies, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'lista.json';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                this.showAlert('Lista exportada com sucesso!');
+            }
+            
+            exportTxt() {
+                if (this.movies.length === 0) {
+                    this.showAlert('Não há filmes para gerar lista.', 'warning');
+                    return;
+                }
+                
+                let txtContent = `LISTA DE FILMES (${this.movies.length})\n`;
+                txtContent += "======================\n\n";
+                
+                this.movies.forEach((movie, index) => {
+                    txtContent += `${index + 1}. Título: ${movie.movie}\n`;
+                    txtContent += `   Ator: ${movie.actor}\n`;
+                    txtContent += `   Ano: ${movie.year}\n\n`;
+                });
+                
+                const dataBlob = new Blob([txtContent], {type: 'text/plain;charset=utf-8'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'lista_filmes.txt';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                this.showAlert('Lista em TXT gerada com sucesso!');
+            }
+            
+            autoLoadFromLocalStorage() {
+                try {
+                    const storedMovies = localStorage.getItem('movieManagerData');
+                    if (storedMovies) {
+                        const data = JSON.parse(storedMovies);
+                        if (Array.isArray(data)) {
+                            this.movies = data;
+                            this.updateTable();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar dados do localStorage:', error);
+                }
+            }
+            
+            saveToLocalStorage() {
+                try {
+                    localStorage.setItem('movieManagerData', JSON.stringify(this.movies));
+                } catch (error) {
+                    console.error('Erro ao salvar dados no localStorage:', error);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new MovieManager();
+        });
+    </script>
+</body>
+</html>
