@@ -20,7 +20,7 @@
         }
         
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             background-color: white;
             border-radius: 8px;
@@ -33,6 +33,18 @@
             margin-bottom: 15px;
             color: #2c3e50;
             font-size: 1.5rem;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .form-column {
+            flex: 1;
+            min-width: 250px;
         }
         
         .form-group {
@@ -134,17 +146,13 @@
             white-space: nowrap;
         }
         
-        th:nth-child(1), td:nth-child(1) {
-            width: 50%;
-        }
-        
-        th:nth-child(2), td:nth-child(2) {
-            width: 30%;
-        }
-        
-        th:nth-child(3), td:nth-child(3) {
-            width: 20%;
-        }
+        /* Configuração das larguras das colunas */
+        th:nth-child(1), td:nth-child(1) { width: 25%; } /* Título */
+        th:nth-child(2), td:nth-child(2) { width: 15%; } /* Ator */
+        th:nth-child(3), td:nth-child(3) { width: 8%; }  /* Ano */
+        th:nth-child(4), td:nth-child(4) { width: 15%; } /* Género */
+        th:nth-child(5), td:nth-child(5) { width: 20%; } /* Realizador */
+        th:nth-child(6), td:nth-child(6) { width: 10%; } /* Duração */
         
         th {
             background-color: #f8f9fa;
@@ -248,6 +256,15 @@
                 padding: 10px;
             }
             
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .form-column {
+                min-width: 100%;
+            }
+            
             .button-group {
                 flex-direction: column;
                 gap: 10px;
@@ -256,11 +273,14 @@
             .left-buttons, .right-buttons {
                 width: 100%;
                 justify-content: center;
+                flex-wrap: wrap;
             }
             
             button {
                 width: auto;
                 flex: 1;
+                min-width: 120px;
+                margin: 2px;
             }
             
             .search-row {
@@ -278,16 +298,54 @@
             
             table {
                 table-layout: auto;
+                min-width: 700px;
             }
             
             th:nth-child(1), td:nth-child(1),
             th:nth-child(2), td:nth-child(2),
-            th:nth-child(3), td:nth-child(3) {
+            th:nth-child(3), td:nth-child(3),
+            th:nth-child(4), td:nth-child(4),
+            th:nth-child(5), td:nth-child(5),
+            th:nth-child(6), td:nth-child(6) {
                 width: auto;
             }
             
             th {
                 resize: none;
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+            
+            td {
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+            
+            .table-container {
+                max-height: 350px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            
+            .container {
+                padding: 8px;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            button {
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+            
+            .left-buttons, .right-buttons {
+                gap: 4px;
             }
         }
     </style>
@@ -298,19 +356,40 @@
         
         <div id="alert-container"></div>
         
-        <div class="form-group">
-            <label for="movie-name">Título do Filme:</label>
-            <input type="text" id="movie-name" placeholder="Digite o título do filme">
-        </div>
-        
-        <div class="form-group">
-            <label for="actor-name">Ator Principal:</label>
-            <input type="text" id="actor-name" placeholder="Digite o nome do ator principal">
-        </div>
-        
-        <div class="form-group">
-            <label for="year">Ano:</label>
-            <input type="text" id="year" placeholder="Digite o ano de lançamento">
+        <div class="form-row">
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="movie-name">Título do Filme:</label>
+                    <input type="text" id="movie-name" placeholder="Digite o título do filme">
+                </div>
+                
+                <div class="form-group">
+                    <label for="actor-name">Ator Principal:</label>
+                    <input type="text" id="actor-name" placeholder="Digite o nome do ator principal">
+                </div>
+                
+                <div class="form-group">
+                    <label for="year">Ano:</label>
+                    <input type="text" id="year" placeholder="Digite o ano de lançamento">
+                </div>
+            </div>
+            
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="genre">Género:</label>
+                    <input type="text" id="genre" placeholder="Digite o género do filme">
+                </div>
+                
+                <div class="form-group">
+                    <label for="director">Realizador:</label>
+                    <input type="text" id="director" placeholder="Digite o nome do realizador">
+                </div>
+                
+                <div class="form-group">
+                    <label for="duration">Duração (ex: 1h 24m):</label>
+                    <input type="text" id="duration" placeholder="Ex: 1h 24m, 2h, 45m">
+                </div>
+            </div>
         </div>
         
         <div class="search-section">
@@ -347,6 +426,9 @@
                         <th data-column="movie">Título do Filme</th>
                         <th data-column="actor">Ator Principal</th>
                         <th data-column="year">Ano</th>
+                        <th data-column="genre">Género</th>
+                        <th data-column="director">Realizador</th>
+                        <th data-column="duration">Duração</th>
                     </tr>
                 </thead>
                 <tbody id="movies-tbody">
@@ -378,6 +460,9 @@
                 this.movieNameInput = document.getElementById('movie-name');
                 this.actorNameInput = document.getElementById('actor-name');
                 this.yearInput = document.getElementById('year');
+                this.genreInput = document.getElementById('genre');
+                this.directorInput = document.getElementById('director');
+                this.durationInput = document.getElementById('duration');
                 this.searchInput = document.getElementById('search-input');
                 this.prevResultButton = document.getElementById('prev-result');
                 this.nextResultButton = document.getElementById('next-result');
@@ -409,6 +494,11 @@
                 });
             }
             
+            validateDuration(duration) {
+                const pattern = /^\d+h\s*\d*m?$|^\d+h$|^\d+m$/;
+                return pattern.test(duration.trim());
+            }
+            
             showAlert(message, type = 'success') {
                 const alertDiv = document.createElement('div');
                 alertDiv.className = `alert alert-${type}`;
@@ -425,6 +515,9 @@
                 this.movieNameInput.value = '';
                 this.actorNameInput.value = '';
                 this.yearInput.value = '';
+                this.genreInput.value = '';
+                this.directorInput.value = '';
+                this.durationInput.value = '';
                 this.searchInput.value = '';
                 this.selectedRow = null;
                 this.clearTableSelection();
@@ -444,9 +537,18 @@
                 const movie = this.movieNameInput.value.trim();
                 const actor = this.actorNameInput.value.trim();
                 const yearStr = this.yearInput.value.trim();
+                const genre = this.genreInput.value.trim();
+                const director = this.directorInput.value.trim();
+                const duration = this.durationInput.value.trim();
                 
                 if (!movie || !actor || !yearStr) {
-                    this.showAlert('Por favor, preencha todos os campos.', 'warning');
+                    this.showAlert('Por favor, preencha os campos obrigatórios: Título, Ator e Ano.', 'warning');
+                    return;
+                }
+                
+                // Validar formato da duração
+                if (duration && !this.validateDuration(duration)) {
+                    this.showAlert('Formato de duração inválido. Use o formato: 1h 24m, 2h, 45m', 'warning');
                     return;
                 }
                 
@@ -464,7 +566,10 @@
                 const movieData = {
                     movie: movie,
                     actor: actor,
-                    year: year
+                    year: year,
+                    genre: genre,
+                    director: director,
+                    duration: duration
                 };
                 
                 this.movies.push(movieData);
@@ -504,15 +609,31 @@
                     const yearCell = document.createElement('td');
                     yearCell.textContent = movie.year;
                     
+                    const genreCell = document.createElement('td');
+                    genreCell.textContent = movie.genre;
+                    
+                    const directorCell = document.createElement('td');
+                    directorCell.textContent = movie.director;
+                    
+                    const durationCell = document.createElement('td');
+                    durationCell.textContent = movie.duration;
+                    
+                    // Destacar termos de pesquisa em todas as colunas
                     if (this.searchTerm && this.searchResults.includes(index)) {
                         this.highlightSearchTerm(movieCell, movie.movie);
                         this.highlightSearchTerm(actorCell, movie.actor);
                         this.highlightSearchTerm(yearCell, movie.year.toString());
+                        this.highlightSearchTerm(genreCell, movie.genre);
+                        this.highlightSearchTerm(directorCell, movie.director);
+                        this.highlightSearchTerm(durationCell, movie.duration);
                     }
                     
                     row.appendChild(movieCell);
                     row.appendChild(actorCell);
                     row.appendChild(yearCell);
+                    row.appendChild(genreCell);
+                    row.appendChild(directorCell);
+                    row.appendChild(durationCell);
                     
                     row.addEventListener('click', () => {
                         this.clearTableSelection();
@@ -564,38 +685,55 @@
                 this.movieNameInput.value = movie.movie;
                 this.actorNameInput.value = movie.actor;
                 this.yearInput.value = movie.year;
+                this.genreInput.value = movie.genre;
+                this.directorInput.value = movie.director;
+                this.durationInput.value = movie.duration;
             }
             
-            searchMovies() {
-                this.searchTerm = this.searchInput.value.trim().toLowerCase();
-                if (!this.searchTerm) {
-                    this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
-                    return;
-                }
-                
-                // Limpar seleção anterior quando iniciar nova pesquisa
-                this.clearTableSelection();
-                
-                this.searchResults = [];
-                
-                this.movies.forEach((movie, index) => {
-                    if (movie.movie.toLowerCase().includes(this.searchTerm) || 
-                        movie.actor.toLowerCase().includes(this.searchTerm) || 
-                        movie.year.toString().includes(this.searchTerm)) {
-                        this.searchResults.push(index);
-                    }
-                });
-                
-                if (this.searchResults.length === 0) {
-                    this.showAlert('Nenhum resultado encontrado.', 'info');
-                    this.currentSearchIndex = -1;
-                    this.searchStatus.textContent = 'Nenhum resultado encontrado';
-                    return;
-                }
-                
-                this.currentSearchIndex = 0;
-                this.highlightSearchResult();
-            }
+			searchMovies() {
+				this.searchTerm = this.searchInput.value.trim().toLowerCase();
+				if (!this.searchTerm) {
+					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
+					return;
+				}
+				
+				// Verificar se o termo de pesquisa mudou
+				if (this.lastSearchTerm === this.searchTerm) {
+					// Mesmo termo, manter os resultados atuais
+					if (this.searchResults.length === 0) {
+						this.showAlert('Nenhum resultado encontrado.', 'info');
+						this.currentSearchIndex = -1;
+						this.searchStatus.textContent = 'Nenhum resultado encontrado';
+						return;
+					}
+				} else {
+					// Novo termo, fazer nova pesquisa
+					this.lastSearchTerm = this.searchTerm;
+					this.searchResults = [];
+					
+					this.movies.forEach((movie, index) => {
+						if (movie.movie.toLowerCase().includes(this.searchTerm) || 
+							movie.actor.toLowerCase().includes(this.searchTerm) || 
+							movie.year.toString().includes(this.searchTerm) ||
+							movie.genre.toLowerCase().includes(this.searchTerm) ||
+							movie.director.toLowerCase().includes(this.searchTerm) ||
+							movie.duration.toLowerCase().includes(this.searchTerm)) {
+							this.searchResults.push(index);
+						}
+					});
+					
+					if (this.searchResults.length === 0) {
+						this.showAlert('Nenhum resultado encontrado.', 'info');
+						this.currentSearchIndex = -1;
+						this.searchStatus.textContent = 'Nenhum resultado encontrado';
+						return;
+					}
+					
+					this.currentSearchIndex = 0;
+				}
+				
+				this.highlightSearchResult();
+			}
             
             highlightSearchResult() {
                 if (this.searchResults.length === 0 || this.currentSearchIndex < 0) return;
@@ -610,6 +748,19 @@
             }
             
 			nextResult() {
+				// Verificar se o termo de pesquisa mudou
+				const currentSearchTerm = this.searchInput.value.trim().toLowerCase();
+				if (!currentSearchTerm) {
+					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
+					return;
+				}
+				
+				if (this.lastSearchTerm !== currentSearchTerm) {
+					// Termo mudou, fazer nova pesquisa
+					this.searchMovies();
+					return;
+				}
+				
 				// Se não há pesquisa ativa, realizar uma nova pesquisa
 				if (this.searchResults.length === 0) {
 					this.searchMovies();
@@ -619,12 +770,23 @@
 				if (this.currentSearchIndex < this.searchResults.length - 1) {
 					this.currentSearchIndex++;
 					this.highlightSearchResult();
-				} else {
-					// this.showAlert('Último resultado alcançado.', 'info');
 				}
 			}
 
 			previousResult() {
+				// Verificar se o termo de pesquisa mudou
+				const currentSearchTerm = this.searchInput.value.trim().toLowerCase();
+				if (!currentSearchTerm) {
+					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
+					return;
+				}
+				
+				if (this.lastSearchTerm !== currentSearchTerm) {
+					// Termo mudou, fazer nova pesquisa
+					this.searchMovies();
+					return;
+				}
+				
 				// Se não há pesquisa ativa, realizar uma nova pesquisa
 				if (this.searchResults.length === 0) {
 					this.searchMovies();
@@ -634,8 +796,6 @@
 				if (this.currentSearchIndex > 0) {
 					this.currentSearchIndex--;
 					this.highlightSearchResult();
-				} else {
-					// this.showAlert('Primeiro resultado alcançado.', 'info');
 				}
 			}
             
@@ -660,8 +820,8 @@
                     });
                 } else {
                     this.movies.sort((a, b) => {
-                        const aValue = a[column].toLowerCase();
-                        const bValue = b[column].toLowerCase();
+                        const aValue = String(a[column] || '').toLowerCase();
+                        const bValue = String(b[column] || '').toLowerCase();
                         
                         if (aValue < bValue) return this.sortReverse ? 1 : -1;
                         if (aValue > bValue) return this.sortReverse ? -1 : 1;
@@ -691,7 +851,16 @@
                                     'movie' in item && 
                                     'actor' in item && 
                                     'year' in item) {
-                                    validMovies.push(item);
+                                    // Garantir compatibilidade com versões antigas
+                                    const movieData = {
+                                        movie: item.movie,
+                                        actor: item.actor,
+                                        year: item.year,
+                                        genre: item.genre || '',
+                                        director: item.director || '',
+                                        duration: item.duration || ''
+                                    };
+                                    validMovies.push(movieData);
                                 }
                             }
                             
@@ -745,7 +914,10 @@
                 this.movies.forEach((movie, index) => {
                     txtContent += `${index + 1}. Título: ${movie.movie}\n`;
                     txtContent += `   Ator: ${movie.actor}\n`;
-                    txtContent += `   Ano: ${movie.year}\n\n`;
+                    txtContent += `   Ano: ${movie.year}\n`;
+                    txtContent += `   Género: ${movie.genre}\n`;
+                    txtContent += `   Realizador: ${movie.director}\n`;
+                    txtContent += `   Duração: ${movie.duration}\n\n`;
                 });
                 
                 const dataBlob = new Blob([txtContent], {type: 'text/plain;charset=utf-8'});
@@ -767,7 +939,15 @@
                     if (storedMovies) {
                         const data = JSON.parse(storedMovies);
                         if (Array.isArray(data)) {
-                            this.movies = data;
+                            // Garantir compatibilidade com versões antigas
+                            this.movies = data.map(movie => ({
+                                movie: movie.movie,
+                                actor: movie.actor,
+                                year: movie.year,
+                                genre: movie.genre || '',
+                                director: movie.director || '',
+                                duration: movie.duration || ''
+                            }));
                             this.updateTable();
                         }
                     }
