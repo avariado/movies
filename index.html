@@ -35,6 +35,48 @@
             font-size: 1.5rem;
         }
         
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+            transition: background-color 0.3s;
+        }
+        
+        .collapsible-header:hover {
+            background-color: #e9ecef;
+        }
+        
+        .collapsible-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #495057;
+        }
+        
+        .toggle-icon {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #6c757d;
+            transition: transform 0.3s;
+        }
+        
+        .collapsible-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            max-height: 1000px;
+            opacity: 1;
+        }
+        
+        .collapsible-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+        
         .form-row {
             display: flex;
             flex-wrap: wrap;
@@ -78,16 +120,25 @@
         
         .search-input-container {
             flex: 1;
+            max-width: 300px; /* Reduzindo o tamanho da caixa de pesquisa */
         }
         
         .search-buttons {
             display: flex;
             gap: 5px;
+            align-items: center;
         }
         
         .search-buttons button {
             padding: 6px 10px;
             font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .search-status {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-left: 10px;
             white-space: nowrap;
         }
         
@@ -244,13 +295,6 @@
             display: none;
         }
         
-        .search-status {
-            font-size: 0.8rem;
-            color: #6c757d;
-            margin-top: 5px;
-            text-align: center;
-        }
-        
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -288,12 +332,22 @@
                 gap: 5px;
             }
             
+            .search-input-container {
+                max-width: 100%;
+            }
+            
             .search-buttons {
                 width: 100%;
             }
             
             .search-buttons button {
                 flex: 1;
+            }
+            
+            .search-status {
+                margin-left: 0;
+                margin-top: 5px;
+                text-align: center;
             }
             
             table {
@@ -356,66 +410,73 @@
         
         <div id="alert-container"></div>
         
-        <div class="form-row">
-            <div class="form-column">
-                <div class="form-group">
-                    <label for="movie-name">Título do Filme:</label>
-                    <input type="text" id="movie-name" placeholder="Digite o título do filme">
+        <div class="collapsible-header" id="collapsible-header">
+            <h2>Formulário de Filmes</h2>
+            <span class="toggle-icon" id="toggle-icon">−</span>
+        </div>
+        
+        <div class="collapsible-content" id="collapsible-content">
+            <div class="form-row">
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="movie-name">Título do Filme:</label>
+                        <input type="text" id="movie-name" placeholder="Digite o título do filme">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="actor-name">Ator Principal:</label>
+                        <input type="text" id="actor-name" placeholder="Digite o nome do ator principal">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="year">Ano:</label>
+                        <input type="text" id="year" placeholder="Digite o ano de lançamento">
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="actor-name">Ator Principal:</label>
-                    <input type="text" id="actor-name" placeholder="Digite o nome do ator principal">
-                </div>
-                
-                <div class="form-group">
-                    <label for="year">Ano:</label>
-                    <input type="text" id="year" placeholder="Digite o ano de lançamento">
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="genre">Género:</label>
+                        <input type="text" id="genre" placeholder="Digite o género do filme">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="director">Realizador:</label>
+                        <input type="text" id="director" placeholder="Digite o nome do realizador">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="duration">Duração (ex: 1h 24m):</label>
+                        <input type="text" id="duration" placeholder="Ex: 1h 24m, 2h, 45m">
+                    </div>
                 </div>
             </div>
             
-            <div class="form-column">
-                <div class="form-group">
-                    <label for="genre">Género:</label>
-                    <input type="text" id="genre" placeholder="Digite o género do filme">
-                </div>
-                
-                <div class="form-group">
-                    <label for="director">Realizador:</label>
-                    <input type="text" id="director" placeholder="Digite o nome do realizador">
-                </div>
-                
-                <div class="form-group">
-                    <label for="duration">Duração (ex: 1h 24m):</label>
-                    <input type="text" id="duration" placeholder="Ex: 1h 24m, 2h, 45m">
+            <div class="search-section">
+                <label for="search-input">Pesquisar:</label>
+                <div class="search-row">
+                    <div class="search-input-container">
+                        <input type="text" id="search-input" placeholder="Digite um termo para pesquisar">
+                    </div>
+                    <div class="search-buttons">
+                        <button class="btn-info" id="prev-result">Anterior</button>
+                        <button class="btn-info" id="next-result">Seguinte</button>
+                        <div id="search-status" class="search-status"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="search-section">
-            <label for="search-input">Pesquisar:</label>
-            <div class="search-row">
-                <div class="search-input-container">
-                    <input type="text" id="search-input" placeholder="Digite um termo para pesquisar">
+            
+            <div class="button-group">
+                <div class="left-buttons">
+                    <button class="btn-info" id="add-movie">Adicionar Filme</button>
+                    <button class="btn-info" id="remove-movie">Remover Selecionado</button>
+                    <button class="btn-info" id="clear-fields">Limpar</button>
+                    <button class="btn-info" id="export-txt">Gerar Lista</button>
                 </div>
-                <div class="search-buttons">
-                    <button class="btn-info" id="prev-result">Anterior</button>
-                    <button class="btn-info" id="next-result">Seguinte</button>
+                <div class="right-buttons">
+                    <button class="btn-info" id="import-json">Importar</button>
+                    <button class="btn-info" id="export-json">Exportar</button>
                 </div>
-            </div>
-            <div id="search-status" class="search-status"></div>
-        </div>
-        
-        <div class="button-group">
-            <div class="left-buttons">
-                <button class="btn-info" id="add-movie">Adicionar Filme</button>
-                <button class="btn-info" id="remove-movie">Remover Selecionado</button>
-                <button class="btn-info" id="clear-fields">Limpar</button>
-                <button class="btn-info" id="export-txt">Gerar Lista</button>
-            </div>
-            <div class="right-buttons">
-                <button class="btn-info" id="import-json">Importar</button>
-                <button class="btn-info" id="export-json">Exportar</button>
             </div>
         </div>
         
@@ -450,10 +511,15 @@
                 this.searchResults = [];
                 this.currentSearchIndex = -1;
                 this.searchTerm = '';
+                this.isCollapsed = true;
                 
                 this.initializeElements();
                 this.attachEventListeners();
                 this.autoLoadFromLocalStorage();
+				
+				// Inicializar estado colapsado
+				this.collapsibleContent.classList.add('collapsed');
+				this.toggleIcon.textContent = '+';
             }
             
             initializeElements() {
@@ -471,6 +537,9 @@
                 this.alertContainer = document.getElementById('alert-container');
                 this.fileInput = document.getElementById('file-input');
                 this.tableHeaders = document.querySelectorAll('#movies-table th');
+                this.collapsibleHeader = document.getElementById('collapsible-header');
+                this.collapsibleContent = document.getElementById('collapsible-content');
+                this.toggleIcon = document.getElementById('toggle-icon');
             }
             
             attachEventListeners() {
@@ -492,6 +561,21 @@
                 this.tableHeaders.forEach(header => {
                     header.addEventListener('click', () => this.sortColumn(header.dataset.column));
                 });
+                
+                // Event listener para o cabeçalho colapsível
+                this.collapsibleHeader.addEventListener('click', () => this.toggleCollapse());
+            }
+            
+            toggleCollapse() {
+                this.isCollapsed = !this.isCollapsed;
+                
+                if (this.isCollapsed) {
+                    this.collapsibleContent.classList.add('collapsed');
+                    this.toggleIcon.textContent = '+';
+                } else {
+                    this.collapsibleContent.classList.remove('collapsed');
+                    this.toggleIcon.textContent = '−';
+                }
             }
             
             validateDuration(duration) {
