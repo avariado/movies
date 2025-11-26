@@ -650,7 +650,6 @@
     </div>
 
     <script>
-        // JavaScript mantido igual
         class MovieManager {
             constructor() {
                 this.movies = [];
@@ -661,6 +660,7 @@
                 this.currentSearchIndex = -1;
                 this.searchTerm = '';
                 this.isCollapsed = true;
+                this.isSearchActive = false; // Nova propriedade para controlar se a pesquisa está ativa
                 
                 this.initializeElements();
                 this.attachEventListeners();
@@ -765,6 +765,7 @@
                 this.searchResults = [];
                 this.currentSearchIndex = -1;
                 this.searchTerm = '';
+                this.isSearchActive = false; // Marca que a pesquisa não está mais ativa
                 this.updateTable();
                 document.title = "Gerenciador de Filmes";
             }
@@ -853,7 +854,8 @@
                     const durationCell = document.createElement('td');
                     durationCell.textContent = movie.duration;
                     
-                    if (this.searchTerm && this.searchResults.includes(index)) {
+                    // Aplica destaque apenas se a pesquisa estiver ativa
+                    if (this.isSearchActive && this.searchResults.includes(index)) {
                         this.highlightSearchTerm(movieCell, movie.movie);
                         this.highlightSearchTerm(actorCell, movie.actor);
                         this.highlightSearchTerm(yearCell, movie.year.toString());
@@ -874,13 +876,14 @@
                         row.classList.add('selected');
                         this.selectedRow = row;
                         this.fillFormWithMovieData(movie);
-                        this.clearSearch();
+                        // Não limpa a pesquisa quando um filme é selecionado
                     });
                     
                     this.moviesTbody.appendChild(row);
                 });
                 
-                if (this.currentSearchIndex >= 0 && this.currentSearchIndex < this.searchResults.length) {
+                // Destaca o resultado atual se a pesquisa estiver ativa
+                if (this.isSearchActive && this.currentSearchIndex >= 0 && this.currentSearchIndex < this.searchResults.length) {
                     const currentIndex = this.searchResults[this.currentSearchIndex];
                     const rows = this.moviesTbody.querySelectorAll('tr');
                     if (rows[currentIndex]) {
@@ -889,6 +892,7 @@
                         rows[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 }
+                // Caso contrário, destaca a linha selecionada normalmente
                 else if (this.selectedRow !== null) {
                     const index = this.selectedRow.dataset.index;
                     const rows = this.moviesTbody.querySelectorAll('tr');
@@ -920,47 +924,52 @@
                 this.genreInput.value = movie.genre;
                 this.directorInput.value = movie.director;
                 this.durationInput.value = movie.duration;
+                // Não chama clearSearch() aqui - isso era o problema
             }
             
-			searchMovies() {
-				this.searchTerm = this.searchInput.value.trim().toLowerCase();
-				if (!this.searchTerm) {
-					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
-					return;
-				}
-				
-				if (this.lastSearchTerm === this.searchTerm) {
-					if (this.searchResults.length === 0) {
-						this.showAlert('Nenhum resultado encontrado.', 'info');
-						this.currentSearchIndex = -1;
-						return;
-					}
-				} else {
-					this.lastSearchTerm = this.searchTerm;
-					this.searchResults = [];
-					
-					this.movies.forEach((movie, index) => {
-						if (movie.movie.toLowerCase().includes(this.searchTerm) || 
-							movie.actor.toLowerCase().includes(this.searchTerm) || 
-							movie.year.toString().includes(this.searchTerm) ||
-							movie.genre.toLowerCase().includes(this.searchTerm) ||
-							movie.director.toLowerCase().includes(this.searchTerm) ||
-							movie.duration.toLowerCase().includes(this.searchTerm)) {
-							this.searchResults.push(index);
-						}
-					});
-					
-					if (this.searchResults.length === 0) {
-						this.showAlert('Nenhum resultado encontrado.', 'info');
-						this.currentSearchIndex = -1;
-						return;
-					}
-					
-					this.currentSearchIndex = 0;
-				}
-				
-				this.highlightSearchResult();
-			}
+            searchMovies() {
+                this.searchTerm = this.searchInput.value.trim().toLowerCase();
+                if (!this.searchTerm) {
+                    this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
+                    return;
+                }
+                
+                // Se a pesquisa atual é a mesma da anterior, apenas navega pelos resultados
+                if (this.lastSearchTerm === this.searchTerm && this.isSearchActive) {
+                    if (this.searchResults.length === 0) {
+                        this.showAlert('Nenhum resultado encontrado.', 'info');
+                        this.currentSearchIndex = -1;
+                        return;
+                    }
+                } else {
+                    // Nova pesquisa
+                    this.lastSearchTerm = this.searchTerm;
+                    this.searchResults = [];
+                    
+                    this.movies.forEach((movie, index) => {
+                        if (movie.movie.toLowerCase().includes(this.searchTerm) || 
+                            movie.actor.toLowerCase().includes(this.searchTerm) || 
+                            movie.year.toString().includes(this.searchTerm) ||
+                            movie.genre.toLowerCase().includes(this.searchTerm) ||
+                            movie.director.toLowerCase().includes(this.searchTerm) ||
+                            movie.duration.toLowerCase().includes(this.searchTerm)) {
+                            this.searchResults.push(index);
+                        }
+                    });
+                    
+                    if (this.searchResults.length === 0) {
+                        this.showAlert('Nenhum resultado encontrado.', 'info');
+                        this.currentSearchIndex = -1;
+                        this.isSearchActive = false;
+                        return;
+                    }
+                    
+                    this.currentSearchIndex = 0;
+                    this.isSearchActive = true; // Marca que a pesquisa está ativa
+                }
+                
+                this.highlightSearchResult();
+            }
             
             highlightSearchResult() {
                 if (this.searchResults.length === 0 || this.currentSearchIndex < 0) return;
@@ -972,51 +981,53 @@
                 this.fillFormWithMovieData(movie);
             }
             
-			nextResult() {
-				const currentSearchTerm = this.searchInput.value.trim().toLowerCase();
-				if (!currentSearchTerm) {
-					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
-					return;
-				}
-				
-				if (this.lastSearchTerm !== currentSearchTerm) {
-					this.searchMovies();
-					return;
-				}
-				
-				if (this.searchResults.length === 0) {
-					this.searchMovies();
-					return;
-				}
-				
-				if (this.currentSearchIndex < this.searchResults.length - 1) {
-					this.currentSearchIndex++;
-					this.highlightSearchResult();
-				}
-			}
+            nextResult() {
+                const currentSearchTerm = this.searchInput.value.trim().toLowerCase();
+                if (!currentSearchTerm) {
+                    this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
+                    return;
+                }
+                
+                // Se a pesquisa mudou, executa uma nova pesquisa
+                if (this.lastSearchTerm !== currentSearchTerm || !this.isSearchActive) {
+                    this.searchMovies();
+                    return;
+                }
+                
+                if (this.searchResults.length === 0) {
+                    this.searchMovies();
+                    return;
+                }
+                
+                if (this.currentSearchIndex < this.searchResults.length - 1) {
+                    this.currentSearchIndex++;
+                    this.highlightSearchResult();
+                }
+            }
 
-			previousResult() {
-				const currentSearchTerm = this.searchInput.value.trim().toLowerCase();
-				if (!currentSearchTerm) {
-					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
-					return;
-				}
-				
-				if (this.lastSearchTerm !== currentSearchTerm) {
-					this.searchMovies();
-					return;
-				}
-				
-				if (this.searchResults.length === 0) {
-					this.searchMovies();
-					return;
-				}
-				
-				if (this.currentSearchIndex > 0) {
-					this.currentSearchIndex--;
-					this.highlightSearchResult();
-				}
-			}
+            previousResult() {
+                const currentSearchTerm = this.searchInput.value.trim().toLowerCase();
+                if (!currentSearchTerm) {
+                    this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
+                    return;
+                }
+                
+                // Se a pesquisa mudou, executa uma nova pesquisa
+                if (this.lastSearchTerm !== currentSearchTerm || !this.isSearchActive) {
+                    this.searchMovies();
+                    return;
+                }
+                
+                if (this.searchResults.length === 0) {
+                    this.searchMovies();
+                    return;
+                }
+                
+                if (this.currentSearchIndex > 0) {
+                    this.currentSearchIndex--;
+                    this.highlightSearchResult();
+                }
+            }
             
             sortColumn(column) {
                 if (this.currentSortColumn === column) {
