@@ -114,26 +114,27 @@
         
         .search-row {
             display: flex;
-            gap: 5px;
-            align-items: center;
+            gap: 3px;
+            align-items: flex-end;
         }
         
         .search-input-container {
             flex: 1;
-            max-width: 300px;
+            max-width: 400px;
         }
         
         .search-buttons {
             display: flex;
             gap: 5px;
-            align-items: center;
+            align-items: flex-end;
         }
         
         .search-buttons button {
-            padding: 6px 10px;
+            padding: 8px 12px;
             font-size: 0.85rem;
             white-space: nowrap;
             min-width: 80px;
+            height: 36px;
         }
         
         .search-status {
@@ -162,6 +163,10 @@
             font-size: 0.85rem;
             font-weight: 600;
             transition: background-color 0.3s;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .btn-info {
@@ -296,41 +301,103 @@
             display: none;
         }
         
-        /* VERSÃO DESKTOP - Alinhamento corrigido */
-        .search-section {
-            margin: 10px 0;
+        /* DESKTOP – Layout corrigido */
+        @media (min-width: 769px) {
+            /* Linha principal que contém pesquisa + botões */
+            .search-and-buttons-container {
+                display: flex;
+                align-items: flex-end;
+                width: 100%;
+                gap: 20px;
+                margin-bottom: 10px;
+            }
+
+            /* BLOCO ESQUERDO – pesquisa */
+            .search-section {
+                flex: 1 1 60%;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                width: calc(50% - 7.5px); /* Mesma largura que as caixas superiores */
+            }
+
+            .search-row {
+                display: flex;
+                align-items: flex-end;
+                width: 100%;
+                gap: 10px;
+            }
+
+            /* Caixa de pesquisa à esquerda */
+            .search-input-container {
+                flex: 1 1 auto;
+                min-width: 320px;
+            }
+
+            /* CORREÇÃO CRÍTICA: Botões Anterior/Seguinte PERFEITAMENTE alinhados */
+            .search-buttons {
+                display: flex;
+                gap: 10px;
+                align-items: flex-end;
+                flex-shrink: 0;
+                /* REMOVIDO margin-left: auto que estava causando o problema */
+            }
+
+            .search-status {
+                display: none;
+            }
+
+            /* BLOCO DIREITO – botões principais */
+            .all-buttons-container {
+                flex: 1 1 40%;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                gap: 10px;
+                white-space: nowrap;
+                width: calc(50% - 7.5px); /* Mesma largura que as caixas superiores */
+            }
+
+            /* Botões PERFEITAMENTE alinhados à esquerda */
+            .action-buttons-left {
+                display: flex;
+                gap: 13px;
+                justify-content: flex-start;
+                align-items: flex-end;
+            }
+
+            /* Botões alinhados à direita */
+            .action-buttons-right {
+                display: flex;
+                gap: 13px;
+                justify-content: flex-end;
+                align-items: flex-end;
+            }
+
+            .all-buttons-container button {
+                flex-shrink: 0;
+            }
+
+            /* esconder layout mobile no desktop */
+            .button-group {
+                display: none;
+            }
         }
-        
-        .search-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-        }
-        
-        .search-input-container {
-            flex: 0 0 300px; /* Largura fixa igual às outras caixas */
-        }
-        
-        .search-buttons-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-        
-        .search-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .search-status {
-            margin-left: 10px;
-            flex: 1;
-        }
-        
+                
         /* Layout específico para Android */
         @media (max-width: 768px) {
+            .search-and-buttons-container {
+                display: block;
+            }
+            
+            .all-buttons-container {
+                display: none;
+            }
+            
+            .button-group {
+                display: flex;
+            }
+            
             .container {
                 padding: 10px;
             }
@@ -377,8 +444,8 @@
             .search-input-container {
                 max-width: 100%;
                 width: 100%;
-                order: 1; /* Caixa de pesquisa primeiro */
-                flex: 1; /* Ocupa toda a largura no Android */
+                order: 1;
+                flex: 1;
             }
             
             .search-buttons-container {
@@ -386,7 +453,7 @@
                 width: 100%;
                 justify-content: space-between;
                 align-items: center;
-                order: 2; /* Container dos botões e resultados depois da caixa */
+                order: 2;
                 gap: 10px;
             }
             
@@ -402,12 +469,7 @@
             }
             
             .search-status {
-                margin-left: 0;
-                text-align: right;
-                flex: 1;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                display: none;
             }
             
             table {
@@ -472,12 +534,6 @@
                 width: 100%;
                 justify-content: center;
             }
-            
-            .search-status {
-                width: 100%;
-                text-align: center;
-                order: 3;
-            }
         }
     </style>
 </head>
@@ -529,32 +585,45 @@
                 </div>
             </div>
             
-            <div class="search-section">
-                <label for="search-input">Pesquisar:</label>
-                <div class="search-row">
-                    <div class="search-input-container">
-                        <input type="text" id="search-input" placeholder="Digite um termo para pesquisar">
-                    </div>
-                    <div class="search-buttons-container">
+            <div class="search-and-buttons-container">
+                <div class="search-section">
+                    <label for="search-input">Pesquisar:</label>
+                    <div class="search-row">
+                        <div class="search-input-container">
+                            <input type="text" id="search-input" placeholder="Digite um termo para pesquisar">
+                        </div>
                         <div class="search-buttons">
                             <button class="btn-info" id="prev-result">Anterior</button>
                             <button class="btn-info" id="next-result">Seguinte</button>
                         </div>
-                        <div id="search-status" class="search-status"></div>
+                    </div>
+                </div>
+
+                <div class="all-buttons-container">
+                    <div class="action-buttons-left">
+                        <button class="btn-info" id="add-movie">Adicionar Filme</button>
+                        <button class="btn-info" id="remove-movie">Remover</button>
+                        <button class="btn-info" id="clear-fields">Limpar</button>
+                        <button class="btn-info" id="export-txt">Gerar Lista</button>
+                    </div>
+
+                    <div class="action-buttons-right">
+                        <button class="btn-info" id="import-json">Importar</button>
+                        <button class="btn-info" id="export-json">Exportar</button>
                     </div>
                 </div>
             </div>
             
             <div class="button-group">
                 <div class="left-buttons">
-                    <button class="btn-info" id="add-movie">Adicionar Filme</button>
-                    <button class="btn-info" id="remove-movie">Remover Selecionado</button>
-                    <button class="btn-info" id="clear-fields">Limpar</button>
-                    <button class="btn-info" id="export-txt">Gerar Lista</button>
+                    <button class="btn-info" id="add-movie-mobile">Adicionar Filme</button>
+                    <button class="btn-info" id="remove-movie-mobile">Remover</button>
+                    <button class="btn-info" id="clear-fields-mobile">Limpar</button>
+                    <button class="btn-info" id="export-txt-mobile">Gerar Lista</button>
                 </div>
                 <div class="right-buttons">
-                    <button class="btn-info" id="import-json">Importar</button>
-                    <button class="btn-info" id="export-json">Exportar</button>
+                    <button class="btn-info" id="import-json-mobile">Importar</button>
+                    <button class="btn-info" id="export-json-mobile">Exportar</button>
                 </div>
             </div>
         </div>
@@ -581,6 +650,7 @@
     </div>
 
     <script>
+        // JavaScript mantido igual
         class MovieManager {
             constructor() {
                 this.movies = [];
@@ -596,7 +666,6 @@
                 this.attachEventListeners();
                 this.autoLoadFromLocalStorage();
 				
-				// Inicializar estado colapsado
 				this.collapsibleContent.classList.add('collapsed');
 				this.toggleIcon.textContent = '+';
             }
@@ -611,7 +680,6 @@
                 this.searchInput = document.getElementById('search-input');
                 this.prevResultButton = document.getElementById('prev-result');
                 this.nextResultButton = document.getElementById('next-result');
-                this.searchStatus = document.getElementById('search-status');
                 this.moviesTbody = document.getElementById('movies-tbody');
                 this.alertContainer = document.getElementById('alert-container');
                 this.fileInput = document.getElementById('file-input');
@@ -629,6 +697,13 @@
                 document.getElementById('export-json').addEventListener('click', () => this.exportJson());
                 document.getElementById('export-txt').addEventListener('click', () => this.exportTxt());
                 
+                document.getElementById('add-movie-mobile').addEventListener('click', () => this.addMovie());
+                document.getElementById('remove-movie-mobile').addEventListener('click', () => this.removeMovie());
+                document.getElementById('clear-fields-mobile').addEventListener('click', () => this.clearFields());
+                document.getElementById('import-json-mobile').addEventListener('click', () => this.importJson());
+                document.getElementById('export-json-mobile').addEventListener('click', () => this.exportJson());
+                document.getElementById('export-txt-mobile').addEventListener('click', () => this.exportTxt());
+                
                 this.prevResultButton.addEventListener('click', () => this.previousResult());
                 this.nextResultButton.addEventListener('click', () => this.nextResult());
                 this.searchInput.addEventListener('keypress', (e) => {
@@ -641,7 +716,6 @@
                     header.addEventListener('click', () => this.sortColumn(header.dataset.column));
                 });
                 
-                // Event listener para o cabeçalho colapsível
                 this.collapsibleHeader.addEventListener('click', () => this.toggleCollapse());
             }
             
@@ -691,7 +765,6 @@
                 this.searchResults = [];
                 this.currentSearchIndex = -1;
                 this.searchTerm = '';
-                this.searchStatus.textContent = '';
                 this.updateTable();
                 document.title = "Gerenciador de Filmes";
             }
@@ -709,7 +782,6 @@
                     return;
                 }
                 
-                // Validar formato da duração
                 if (duration && !this.validateDuration(duration)) {
                     this.showAlert('Formato de duração inválido. Use o formato: 1h 24m, 2h, 45m', 'warning');
                     return;
@@ -781,7 +853,6 @@
                     const durationCell = document.createElement('td');
                     durationCell.textContent = movie.duration;
                     
-                    // Destacar termos de pesquisa em todas as colunas
                     if (this.searchTerm && this.searchResults.includes(index)) {
                         this.highlightSearchTerm(movieCell, movie.movie);
                         this.highlightSearchTerm(actorCell, movie.actor);
@@ -809,7 +880,6 @@
                     this.moviesTbody.appendChild(row);
                 });
                 
-                // Destacar resultado da pesquisa atual (se houver pesquisa ativa)
                 if (this.currentSearchIndex >= 0 && this.currentSearchIndex < this.searchResults.length) {
                     const currentIndex = this.searchResults[this.currentSearchIndex];
                     const rows = this.moviesTbody.querySelectorAll('tr');
@@ -819,7 +889,6 @@
                         rows[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 }
-                // Se não há pesquisa ativa, manter a seleção anterior (se houver)
                 else if (this.selectedRow !== null) {
                     const index = this.selectedRow.dataset.index;
                     const rows = this.moviesTbody.querySelectorAll('tr');
@@ -860,17 +929,13 @@
 					return;
 				}
 				
-				// Verificar se o termo de pesquisa mudou
 				if (this.lastSearchTerm === this.searchTerm) {
-					// Mesmo termo, manter os resultados atuais
 					if (this.searchResults.length === 0) {
 						this.showAlert('Nenhum resultado encontrado.', 'info');
 						this.currentSearchIndex = -1;
-						this.searchStatus.textContent = 'Nenhum resultado encontrado';
 						return;
 					}
 				} else {
-					// Novo termo, fazer nova pesquisa
 					this.lastSearchTerm = this.searchTerm;
 					this.searchResults = [];
 					
@@ -888,7 +953,6 @@
 					if (this.searchResults.length === 0) {
 						this.showAlert('Nenhum resultado encontrado.', 'info');
 						this.currentSearchIndex = -1;
-						this.searchStatus.textContent = 'Nenhum resultado encontrado';
 						return;
 					}
 					
@@ -902,8 +966,6 @@
                 if (this.searchResults.length === 0 || this.currentSearchIndex < 0) return;
                 
                 this.updateTable();
-                this.searchStatus.textContent = `Resultado ${this.currentSearchIndex + 1} de ${this.searchResults.length}`;
-                document.title = `Gerenciador de Filmes - Resultado ${this.currentSearchIndex + 1} de ${this.searchResults.length}`;
                 
                 const movieIndex = this.searchResults[this.currentSearchIndex];
                 const movie = this.movies[movieIndex];
@@ -911,7 +973,6 @@
             }
             
 			nextResult() {
-				// Verificar se o termo de pesquisa mudou
 				const currentSearchTerm = this.searchInput.value.trim().toLowerCase();
 				if (!currentSearchTerm) {
 					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
@@ -919,12 +980,10 @@
 				}
 				
 				if (this.lastSearchTerm !== currentSearchTerm) {
-					// Termo mudou, fazer nova pesquisa
 					this.searchMovies();
 					return;
 				}
 				
-				// Se não há pesquisa ativa, realizar uma nova pesquisa
 				if (this.searchResults.length === 0) {
 					this.searchMovies();
 					return;
@@ -937,7 +996,6 @@
 			}
 
 			previousResult() {
-				// Verificar se o termo de pesquisa mudou
 				const currentSearchTerm = this.searchInput.value.trim().toLowerCase();
 				if (!currentSearchTerm) {
 					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
@@ -945,12 +1003,10 @@
 				}
 				
 				if (this.lastSearchTerm !== currentSearchTerm) {
-					// Termo mudou, fazer nova pesquisa
 					this.searchMovies();
 					return;
 				}
 				
-				// Se não há pesquisa ativa, realizar uma nova pesquisa
 				if (this.searchResults.length === 0) {
 					this.searchMovies();
 					return;
@@ -1014,7 +1070,6 @@
                                     'movie' in item && 
                                     'actor' in item && 
                                     'year' in item) {
-                                    // Garantir compatibilidade com versões antigas
                                     const movieData = {
                                         movie: item.movie,
                                         actor: item.actor,
@@ -1102,7 +1157,6 @@
                     if (storedMovies) {
                         const data = JSON.parse(storedMovies);
                         if (Array.isArray(data)) {
-                            // Garantir compatibilidade com versões antigas
                             this.movies = data.map(movie => ({
                                 movie: movie.movie,
                                 actor: movie.actor,
