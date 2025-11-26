@@ -770,49 +770,53 @@
                 document.title = "Gerenciador de Filmes";
             }
             
-            addMovie() {
-                const movie = this.movieNameInput.value.trim();
-                const actor = this.actorNameInput.value.trim();
-                const yearStr = this.yearInput.value.trim();
-                const genre = this.genreInput.value.trim();
-                const director = this.directorInput.value.trim();
-                const duration = this.durationInput.value.trim();
-                
-                if (!movie || !actor || !yearStr) {
-                    this.showAlert('Por favor, preencha os campos obrigatórios: Título, Ator e Ano.', 'warning');
-                    return;
-                }
-                
-                if (duration && !this.validateDuration(duration)) {
-                    this.showAlert('Formato de duração inválido. Use o formato: 1h 30m, 2h, 45m', 'warning');
-                    return;
-                }
-                
-                let year;
-                try {
-                    year = parseInt(yearStr);
-                    if (isNaN(year) || year < 1888 || year > 2100) {
-                        throw new Error('Ano inválido');
-                    }
-                } catch (error) {
-                    this.showAlert('Por favor, insira um ano válido.', 'warning');
-                    return;
-                }
-                
-                const movieData = {
-                    movie: movie,
-                    actor: actor,
-                    year: year,
-                    genre: genre,
-                    director: director,
-                    duration: duration
-                };
-                
-                this.movies.push(movieData);
-                this.updateTable();
-                this.clearFields();
-                this.saveToLocalStorage();
-            }
+			addMovie() {
+				const movie = this.movieNameInput.value.trim();
+				const actor = this.actorNameInput.value.trim();
+				const yearStr = this.yearInput.value.trim();
+				const genre = this.genreInput.value.trim();
+				const director = this.directorInput.value.trim();
+				const duration = this.durationInput.value.trim();
+				
+				if (!movie || !actor) {
+					this.showAlert('Por favor, preencha os campos obrigatórios: Título e Ator.', 'warning');
+					return;
+				}
+				
+				// Validar duração (apenas se preenchida)
+				if (duration && !this.validateDuration(duration)) {
+					this.showAlert('Formato de duração inválido. Use o formato: 1h 30m, 2h, 45m', 'warning');
+					return;
+				}
+				
+				// Processar ano (tornar opcional)
+				let year = "";
+				if (yearStr) {  // Apenas validar se foi preenchido
+					try {
+						year = parseInt(yearStr);
+						if (isNaN(year) || year < 1888 || year > 2100) {
+							throw new Error('Ano inválido');
+						}
+					} catch (error) {
+						this.showAlert('Por favor, insira um ano válido (entre 1888 e 2100) ou deixe em branco.', 'warning');
+						return;
+					}
+				}
+				
+				const movieData = {
+					movie: movie,
+					actor: actor,
+					year: year,
+					genre: genre,
+					director: director,
+					duration: duration
+				};
+				
+				this.movies.push(movieData);
+				this.updateTable();
+				this.clearFields();
+				this.saveToLocalStorage();
+			}
             
             removeMovie() {
                 if (this.selectedRow === null) {
