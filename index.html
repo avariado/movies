@@ -296,6 +296,39 @@
             display: none;
         }
         
+        /* VERSÃO DESKTOP - Alinhamento corrigido */
+        .search-section {
+            margin: 10px 0;
+        }
+        
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .search-input-container {
+            flex: 0 0 300px; /* Largura fixa igual às outras caixas */
+        }
+        
+        .search-buttons-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .search-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .search-status {
+            margin-left: 10px;
+            flex: 1;
+        }
+        
         /* Layout específico para Android */
         @media (max-width: 768px) {
             .container {
@@ -345,6 +378,7 @@
                 max-width: 100%;
                 width: 100%;
                 order: 1; /* Caixa de pesquisa primeiro */
+                flex: 1; /* Ocupa toda a largura no Android */
             }
             
             .search-buttons-container {
