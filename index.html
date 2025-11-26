@@ -329,33 +329,51 @@
                 margin: 2px;
             }
             
+            .search-section {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
             .search-row {
                 flex-direction: column;
-                gap: 5px;
+                gap: 8px;
+                width: 100%;
             }
             
             .search-input-container {
                 max-width: 100%;
                 width: 100%;
+                order: 1; /* Caixa de pesquisa primeiro */
+            }
+            
+            .search-buttons-container {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                align-items: center;
+                order: 2; /* Container dos botões e resultados depois da caixa */
+                gap: 10px;
             }
             
             .search-buttons {
-                width: 100%;
-                justify-content: flex-start; /* Botões à esquerda no Android */
-                order: 1; /* Garantir que os botões venham primeiro */
+                justify-content: flex-start;
+                gap: 5px;
+                flex: 1;
             }
             
             .search-buttons button {
-                flex: 0 0 48%; /* Botões com tamanho consistente */
-                min-width: 0;
+                flex: 0 0 auto;
+                min-width: 100px;
             }
             
             .search-status {
                 margin-left: 0;
-                margin-top: 5px;
-                text-align: center;
-                width: 100%;
-                order: 2; /* Status vem depois dos botões */
+                text-align: right;
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             
             table {
@@ -411,69 +429,20 @@
                 gap: 4px;
             }
             
-            /* Layout específico para Android - ajuste da pesquisa */
-            .search-section {
-                display: flex;
-                flex-direction: column;
-                gap: 5px;
-            }
-            
-            .search-row {
-                flex-direction: row;
-                align-items: stretch;
-                width: 100%;
+            .search-buttons-container {
                 flex-wrap: wrap;
-            }
-            
-            .search-input-container {
-                flex: 1;
-                width: 100%; /* Caixa de pesquisa ocupa toda a largura */
-                max-width: none;
-                order: 0; /* Caixa de pesquisa primeiro */
-            }
-            
-            .search-buttons {
-                flex: 1;
-                justify-content: flex-start; /* Botões à esquerda */
-                gap: 5px;
-                order: 1; /* Botões depois da caixa de pesquisa */
-                width: 100%;
-                margin-top: 5px;
-            }
-            
-            .search-buttons button {
-                flex: 0 0 48%; /* Botões ocupam 48% cada para manter tamanho igual */
-                min-width: 0;
-            }
-            
-            .search-status {
-                order: 2; /* Status depois dos botões */
-                margin-left: 0;
-                margin-top: 5px;
-                text-align: left;
-                width: 100%;
-            }
-        }
-        
-        /* Ajuste adicional para telas muito pequenas */
-        @media (max-width: 360px) {
-            .search-row {
-                flex-wrap: wrap;
-            }
-            
-            .search-input-container {
-                width: 100%;
-                margin-bottom: 5px;
+                gap: 8px;
             }
             
             .search-buttons {
                 width: 100%;
+                justify-content: center;
             }
             
             .search-status {
                 width: 100%;
-                margin-left: 0;
                 text-align: center;
+                order: 3;
             }
         }
     </style>
@@ -532,9 +501,11 @@
                     <div class="search-input-container">
                         <input type="text" id="search-input" placeholder="Digite um termo para pesquisar">
                     </div>
-                    <div class="search-buttons">
-                        <button class="btn-info" id="prev-result">Anterior</button>
-                        <button class="btn-info" id="next-result">Seguinte</button>
+                    <div class="search-buttons-container">
+                        <div class="search-buttons">
+                            <button class="btn-info" id="prev-result">Anterior</button>
+                            <button class="btn-info" id="next-result">Seguinte</button>
+                        </div>
                         <div id="search-status" class="search-status"></div>
                     </div>
                 </div>
