@@ -318,7 +318,7 @@
                 margin: 0;
                 display: flex;
                 flex-direction: column;
-                width: calc(50% - 7.5px); /* Mesma largura que as caixas superiores */
+                width: calc(50% - 7.5px);
             }
 
             .search-row {
@@ -340,7 +340,6 @@
                 gap: 13px;
                 align-items: flex-end;
                 flex-shrink: 0;
-                /* REMOVIDO margin-left: auto que estava causando o problema */
             }
 
             .search-status {
@@ -355,7 +354,7 @@
                 align-items: flex-end;
                 gap: 14px;
                 white-space: nowrap;
-                width: calc(50% - 7.5px); /* Mesma largura que as caixas superiores */
+                width: calc(50% - 7.5px);
             }
 
             /* Botões PERFEITAMENTE alinhados à esquerda */
@@ -378,13 +377,72 @@
                 flex-shrink: 0;
             }
 
-            /* esconder layout mobile no desktop */
+            /* NOVA CORREÇÃO: Mostrar ambos os layouts no Android horizontal */
             .button-group {
                 display: none;
             }
         }
+        
+        /* Tablet (768px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .search-and-buttons-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-section,
+            .all-buttons-container {
+                width: 100% !important;
+            }
+            
+            .action-buttons-left,
+            .action-buttons-right {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .action-buttons-left button,
+            .action-buttons-right button {
+                flex: 1;
+                min-width: 120px;
+            }
+            
+            .search-input-container {
+                min-width: 250px;
+            }
+            
+            .table-container {
+                max-height: 350px;
+            }
+            
+            th, td {
+                font-size: 0.85rem;
+                padding: 6px 8px;
+            }
+        }
+
+        /* CORREÇÃO CRÍTICA PARA ANDROID HORIZONTAL */
+        /* Quando a altura é pequena (modo horizontal) mostrar ambos os botões */
+        @media (max-height: 600px) {
+            .button-group {
+                display: flex !important;
+            }
+            
+            .all-buttons-container {
+                display: none !important;
+            }
+            
+            .search-and-buttons-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-section {
+                width: 100% !important;
+            }
+        }
                 
-        /* Layout específico para Android */
+        /* Layout específico para Android vertical */
         @media (max-width: 768px) {
             .search-and-buttons-container {
                 display: block;
@@ -535,6 +593,23 @@
                 justify-content: center;
             }
         }
+
+        /* CORREÇÃO EXTRA: Garantir que os botões sejam sempre visíveis no Android */
+        /* Se for um dispositivo touch com largura média, forçar layout mobile */
+        @media (max-width: 1024px) and (hover: none) and (pointer: coarse) {
+            .all-buttons-container {
+                display: none !important;
+            }
+            
+            .button-group {
+                display: flex !important;
+            }
+            
+            .search-and-buttons-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -614,6 +689,7 @@
                 </div>
             </div>
             
+            <!-- ESTE É O GRUPO DE BOTÕES QUE SEMPRE FUNCIONA NO ANDROID -->
             <div class="button-group">
                 <div class="left-buttons">
                     <button class="btn-info" id="add-movie-mobile">Adicionar Filme</button>
@@ -660,7 +736,7 @@
                 this.currentSearchIndex = -1;
                 this.searchTerm = '';
                 this.isCollapsed = true;
-                this.isSearchActive = false; // Nova propriedade para controlar se a pesquisa está ativa
+                this.isSearchActive = false;
                 
                 this.initializeElements();
                 this.attachEventListeners();
@@ -765,7 +841,7 @@
                 this.searchResults = [];
                 this.currentSearchIndex = -1;
                 this.searchTerm = '';
-                this.isSearchActive = false; // Marca que a pesquisa não está mais ativa
+                this.isSearchActive = false;
                 this.updateTable();
                 document.title = "Gerenciador de Filmes";
             }
@@ -783,15 +859,13 @@
 					return;
 				}
 				
-				// Validar duração (apenas se preenchida)
 				if (duration && !this.validateDuration(duration)) {
 					this.showAlert('Formato de duração inválido. Use o formato: 1h 30m, 2h, 45m', 'warning');
 					return;
 				}
 				
-				// Processar ano (tornar opcional)
 				let year = "";
-				if (yearStr) {  // Apenas validar se foi preenchido
+				if (yearStr) {
 					try {
 						year = parseInt(yearStr);
 						if (isNaN(year) || year < 1888 || year > 2100) {
@@ -858,7 +932,6 @@
                     const durationCell = document.createElement('td');
                     durationCell.textContent = movie.duration;
                     
-                    // Aplica destaque apenas se a pesquisa estiver ativa
                     if (this.isSearchActive && this.searchResults.includes(index)) {
                         this.highlightSearchTerm(movieCell, movie.movie);
                         this.highlightSearchTerm(actorCell, movie.actor);
@@ -880,13 +953,11 @@
                         row.classList.add('selected');
                         this.selectedRow = row;
                         this.fillFormWithMovieData(movie);
-                        // Não limpa a pesquisa quando um filme é selecionado
                     });
                     
                     this.moviesTbody.appendChild(row);
                 });
                 
-                // Destaca o resultado atual se a pesquisa estiver ativa
                 if (this.isSearchActive && this.currentSearchIndex >= 0 && this.currentSearchIndex < this.searchResults.length) {
                     const currentIndex = this.searchResults[this.currentSearchIndex];
                     const rows = this.moviesTbody.querySelectorAll('tr');
@@ -896,7 +967,6 @@
                         rows[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 }
-                // Caso contrário, destaca a linha selecionada normalmente
                 else if (this.selectedRow !== null) {
                     const index = this.selectedRow.dataset.index;
                     const rows = this.moviesTbody.querySelectorAll('tr');
@@ -928,7 +998,6 @@
                 this.genreInput.value = movie.genre;
                 this.directorInput.value = movie.director;
                 this.durationInput.value = movie.duration;
-                // Não chama clearSearch() aqui - isso era o problema
             }
             
             searchMovies() {
@@ -938,7 +1007,6 @@
                     return;
                 }
                 
-                // Se a pesquisa atual é a mesma da anterior, apenas navega pelos resultados
                 if (this.lastSearchTerm === this.searchTerm && this.isSearchActive) {
                     if (this.searchResults.length === 0) {
                         this.showAlert('Nenhum resultado encontrado.', 'info');
@@ -946,7 +1014,6 @@
                         return;
                     }
                 } else {
-                    // Nova pesquisa
                     this.lastSearchTerm = this.searchTerm;
                     this.searchResults = [];
                     
@@ -969,7 +1036,7 @@
                     }
                     
                     this.currentSearchIndex = 0;
-                    this.isSearchActive = true; // Marca que a pesquisa está ativa
+                    this.isSearchActive = true;
                 }
                 
                 this.highlightSearchResult();
@@ -992,7 +1059,6 @@
                     return;
                 }
                 
-                // Se a pesquisa mudou, executa uma nova pesquisa
                 if (this.lastSearchTerm !== currentSearchTerm || !this.isSearchActive) {
                     this.searchMovies();
                     return;
@@ -1016,7 +1082,6 @@
                     return;
                 }
                 
-                // Se a pesquisa mudou, executa uma nova pesquisa
                 if (this.lastSearchTerm !== currentSearchTerm || !this.isSearchActive) {
                     this.searchMovies();
                     return;
@@ -1121,18 +1186,26 @@
                 }
                 
                 const dataStr = JSON.stringify(this.movies, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
                 
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'lista.json';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-                
-                this.showAlert('Lista exportada com sucesso!');
+                if (window.Android && typeof Android.saveJSON === 'function') {
+                    const success = Android.saveJSON('lista_filmes.json', dataStr);
+                    if (success) {
+                        this.showAlert('Lista exportada com sucesso!');
+                    } else {
+                        this.showAlert('Erro ao exportar lista.', 'danger');
+                    }
+                } else {
+                    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'lista.json';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    this.showAlert('Lista exportada com sucesso!');
+                }
             }
             
             exportTxt() {
@@ -1153,17 +1226,25 @@
                     txtContent += `   Duração: ${movie.duration}\n\n`;
                 });
                 
-                const dataBlob = new Blob([txtContent], {type: 'text/plain;charset=utf-8'});
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'lista_filmes.txt';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-                
-                this.showAlert('Lista em TXT gerada com sucesso!');
+                if (window.Android && typeof Android.saveReport === 'function') {
+                    const success = Android.saveReport('lista_filmes.txt', txtContent);
+                    if (success) {
+                        this.showAlert('Lista em TXT gerada com sucesso!');
+                    } else {
+                        this.showAlert('Erro ao gerar lista.', 'danger');
+                    }
+                } else {
+                    const dataBlob = new Blob([txtContent], {type: 'text/plain;charset=utf-8'});
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'lista_filmes.txt';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    this.showAlert('Lista em TXT gerada com sucesso!');
+                }
             }
             
             autoLoadFromLocalStorage() {
