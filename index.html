@@ -133,7 +133,7 @@
             padding: 6px 10px;
             font-size: 0.85rem;
             white-space: nowrap;
-            min-width: 80px; /* Tamanho consistente para os botões */
+            min-width: 80px;
         }
         
         .search-status {
@@ -341,12 +341,13 @@
             
             .search-buttons {
                 width: 100%;
-                justify-content: space-between;
+                justify-content: flex-start; /* Botões à esquerda no Android */
+                order: 1; /* Garantir que os botões venham primeiro */
             }
             
             .search-buttons button {
-                flex: 1;
-                min-width: 0; /* Remover min-width para permitir tamanhos iguais */
+                flex: 0 0 48%; /* Botões com tamanho consistente */
+                min-width: 0;
             }
             
             .search-status {
@@ -354,7 +355,7 @@
                 margin-top: 5px;
                 text-align: center;
                 width: 100%;
-                order: 3; /* Colocar o status após os botões */
+                order: 2; /* Status vem depois dos botões */
             }
             
             table {
@@ -421,18 +422,23 @@
                 flex-direction: row;
                 align-items: stretch;
                 width: 100%;
+                flex-wrap: wrap;
             }
             
             .search-input-container {
-                flex: 0 0 auto;
-                width: 60%; /* Caixa de pesquisa ocupa 60% da largura */
+                flex: 1;
+                width: 100%; /* Caixa de pesquisa ocupa toda a largura */
                 max-width: none;
+                order: 0; /* Caixa de pesquisa primeiro */
             }
             
             .search-buttons {
                 flex: 1;
-                justify-content: flex-end;
+                justify-content: flex-start; /* Botões à esquerda */
                 gap: 5px;
+                order: 1; /* Botões depois da caixa de pesquisa */
+                width: 100%;
+                margin-top: 5px;
             }
             
             .search-buttons button {
@@ -441,12 +447,11 @@
             }
             
             .search-status {
-                order: 0; /* Status volta para a posição original */
-                margin-left: 10px;
-                margin-top: 0;
+                order: 2; /* Status depois dos botões */
+                margin-left: 0;
+                margin-top: 5px;
                 text-align: left;
-                flex: 1;
-                align-self: center;
+                width: 100%;
             }
         }
         
@@ -527,10 +532,10 @@
                     <div class="search-input-container">
                         <input type="text" id="search-input" placeholder="Digite um termo para pesquisar">
                     </div>
-                    <div id="search-status" class="search-status"></div>
                     <div class="search-buttons">
                         <button class="btn-info" id="prev-result">Anterior</button>
                         <button class="btn-info" id="next-result">Seguinte</button>
+                        <div id="search-status" class="search-status"></div>
                     </div>
                 </div>
             </div>
