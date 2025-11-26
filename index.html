@@ -579,8 +579,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="duration">Duração (ex: 1h 24m):</label>
-                        <input type="text" id="duration" placeholder="Ex: 1h 24m, 2h, 45m">
+                        <label for="duration">Duração:</label>
+                        <input type="text" id="duration" placeholder="Ex: 1h 30m, 2h, 45m">
                     </div>
                 </div>
             </div>
@@ -783,7 +783,7 @@
                 }
                 
                 if (duration && !this.validateDuration(duration)) {
-                    this.showAlert('Formato de duração inválido. Use o formato: 1h 24m, 2h, 45m', 'warning');
+                    this.showAlert('Formato de duração inválido. Use o formato: 1h 30m, 2h, 45m', 'warning');
                     return;
                 }
                 
