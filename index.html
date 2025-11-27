@@ -1187,10 +1187,13 @@
                 
                 const dataStr = JSON.stringify(this.movies, null, 2);
                 
+                // NOME FIXO - sempre o mesmo para sobrescrever
+                const fileName = 'lista_filmes.json';
+                
                 if (window.Android && typeof Android.saveJSON === 'function') {
-                    const success = Android.saveJSON('lista_filmes.json', dataStr);
+                    const success = Android.saveJSON(fileName, dataStr);
                     if (success) {
-                        this.showAlert('Lista exportada com sucesso!');
+                        this.showAlert('Lista exportada com sucesso! (Ficheiro sobrescrito)');
                     } else {
                         this.showAlert('Erro ao exportar lista.', 'danger');
                     }
@@ -1199,12 +1202,12 @@
                     const url = URL.createObjectURL(dataBlob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = 'lista.json';
+                    link.download = fileName;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                    this.showAlert('Lista exportada com sucesso!');
+                    this.showAlert('Lista exportada com sucesso! (Ficheiro sobrescrito)');
                 }
             }
             
@@ -1226,10 +1229,13 @@
                     txtContent += `   Duração: ${movie.duration}\n\n`;
                 });
                 
+                // NOME FIXO - sempre o mesmo para sobrescrever
+                const fileName = 'lista_filmes.txt';
+                
                 if (window.Android && typeof Android.saveReport === 'function') {
-                    const success = Android.saveReport('lista_filmes.txt', txtContent);
+                    const success = Android.saveReport(fileName, txtContent);
                     if (success) {
-                        this.showAlert('Lista em TXT gerada com sucesso!');
+                        this.showAlert('Lista em TXT gerada com sucesso! (Ficheiro sobrescrito)');
                     } else {
                         this.showAlert('Erro ao gerar lista.', 'danger');
                     }
@@ -1238,12 +1244,12 @@
                     const url = URL.createObjectURL(dataBlob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = 'lista_filmes.txt';
+                    link.download = fileName;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                    this.showAlert('Lista em TXT gerada com sucesso!');
+                    this.showAlert('Lista em TXT gerada com sucesso! (Ficheiro sobrescrito)');
                 }
             }
             
