@@ -1193,7 +1193,7 @@
                 if (window.Android && typeof Android.saveJSON === 'function') {
                     const success = Android.saveJSON(fileName, dataStr);
                     if (success) {
-                        this.showAlert('Lista exportada com sucesso! (Ficheiro sobrescrito)');
+                        this.showAlert('Lista exportada com sucesso!');
                     } else {
                         this.showAlert('Erro ao exportar lista.', 'danger');
                     }
@@ -1207,7 +1207,7 @@
                     link.click();
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                    this.showAlert('Lista exportada com sucesso! (Ficheiro sobrescrito)');
+                    this.showAlert('Lista exportada com sucesso!');
                 }
             }
             
@@ -1235,7 +1235,7 @@
                 if (window.Android && typeof Android.saveReport === 'function') {
                     const success = Android.saveReport(fileName, txtContent);
                     if (success) {
-                        this.showAlert('Lista em TXT gerada com sucesso! (Ficheiro sobrescrito)');
+                        this.showAlert('Lista em TXT gerada com sucesso!');
                     } else {
                         this.showAlert('Erro ao gerar lista.', 'danger');
                     }
@@ -1249,7 +1249,7 @@
                     link.click();
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                    this.showAlert('Lista em TXT gerada com sucesso! (Ficheiro sobrescrito)');
+                    this.showAlert('Lista em TXT gerada com sucesso!');
                 }
             }
             
