@@ -203,12 +203,12 @@
             white-space: nowrap;
         }
         
-        /* Configuração das larguras das colunas */
+        /* Configuração das larguras das colunas - NOVA ORDEM */
         th:nth-child(1), td:nth-child(1) { width: 25%; } /* Título */
-        th:nth-child(2), td:nth-child(2) { width: 15%; } /* Ator */
-        th:nth-child(3), td:nth-child(3) { width: 8%; }  /* Ano */
-        th:nth-child(4), td:nth-child(4) { width: 15%; } /* Género */
-        th:nth-child(5), td:nth-child(5) { width: 20%; } /* Realizador */
+        th:nth-child(2), td:nth-child(2) { width: 15%; } /* Realizador */
+        th:nth-child(3), td:nth-child(3) { width: 15%; } /* Ator */
+        th:nth-child(4), td:nth-child(4) { width: 12%; } /* Género */
+        th:nth-child(5), td:nth-child(5) { width: 8%; }  /* Ano */
         th:nth-child(6), td:nth-child(6) { width: 10%; } /* Duração */
         
         th {
@@ -632,13 +632,13 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="actor-name">Ator Principal:</label>
-                        <input type="text" id="actor-name" placeholder="Digite o nome do ator principal">
+                        <label for="director">Realizador:</label>
+                        <input type="text" id="director" placeholder="Digite o nome do realizador">
                     </div>
                     
                     <div class="form-group">
-                        <label for="year">Ano:</label>
-                        <input type="text" id="year" placeholder="Digite o ano de lançamento">
+                        <label for="actor-name">Ator Principal:</label>
+                        <input type="text" id="actor-name" placeholder="Digite o nome do ator principal">
                     </div>
                 </div>
                 
@@ -649,8 +649,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="director">Realizador:</label>
-                        <input type="text" id="director" placeholder="Digite o nome do realizador">
+                        <label for="year">Ano:</label>
+                        <input type="text" id="year" placeholder="Digite o ano de lançamento">
                     </div>
                     
                     <div class="form-group">
@@ -709,10 +709,10 @@
                 <thead>
                     <tr>
                         <th data-column="movie">Título do Filme</th>
-                        <th data-column="actor">Ator Principal</th>
-                        <th data-column="year">Ano</th>
-                        <th data-column="genre">Género</th>
                         <th data-column="director">Realizador</th>
+                        <th data-column="actor">Ator Principal</th>
+                        <th data-column="genre">Género</th>
+                        <th data-column="year">Ano</th>
                         <th data-column="duration">Duração</th>
                     </tr>
                 </thead>
@@ -748,10 +748,10 @@
             
             initializeElements() {
                 this.movieNameInput = document.getElementById('movie-name');
-                this.actorNameInput = document.getElementById('actor-name');
-                this.yearInput = document.getElementById('year');
-                this.genreInput = document.getElementById('genre');
                 this.directorInput = document.getElementById('director');
+                this.actorNameInput = document.getElementById('actor-name');
+                this.genreInput = document.getElementById('genre');
+                this.yearInput = document.getElementById('year');
                 this.durationInput = document.getElementById('duration');
                 this.searchInput = document.getElementById('search-input');
                 this.prevResultButton = document.getElementById('prev-result');
@@ -826,10 +826,10 @@
             
             clearFields() {
                 this.movieNameInput.value = '';
-                this.actorNameInput.value = '';
-                this.yearInput.value = '';
-                this.genreInput.value = '';
                 this.directorInput.value = '';
+                this.actorNameInput.value = '';
+                this.genreInput.value = '';
+                this.yearInput.value = '';
                 this.durationInput.value = '';
                 this.searchInput.value = '';
                 this.selectedRow = null;
@@ -848,14 +848,14 @@
             
 			addMovie() {
 				const movie = this.movieNameInput.value.trim();
-				const actor = this.actorNameInput.value.trim();
-				const yearStr = this.yearInput.value.trim();
-				const genre = this.genreInput.value.trim();
 				const director = this.directorInput.value.trim();
+				const actor = this.actorNameInput.value.trim();
+				const genre = this.genreInput.value.trim();
+				const yearStr = this.yearInput.value.trim();
 				const duration = this.durationInput.value.trim();
 				
-				if (!movie || !actor) {
-					this.showAlert('Por favor, preencha os campos obrigatórios: Título e Ator.', 'warning');
+				if (!movie) {
+					this.showAlert('Por favor, preencha o campo obrigatório: Título do filme.', 'warning');
 					return;
 				}
 				
@@ -879,10 +879,10 @@
 				
 				const movieData = {
 					movie: movie,
-					actor: actor,
-					year: year,
-					genre: genre,
 					director: director,
+					actor: actor,
+					genre: genre,
+					year: year,
 					duration: duration
 				};
 				
@@ -917,35 +917,35 @@
                     const movieCell = document.createElement('td');
                     movieCell.textContent = movie.movie;
                     
+                    const directorCell = document.createElement('td');
+                    directorCell.textContent = movie.director;
+                    
                     const actorCell = document.createElement('td');
                     actorCell.textContent = movie.actor;
-                    
-                    const yearCell = document.createElement('td');
-                    yearCell.textContent = movie.year;
                     
                     const genreCell = document.createElement('td');
                     genreCell.textContent = movie.genre;
                     
-                    const directorCell = document.createElement('td');
-                    directorCell.textContent = movie.director;
+                    const yearCell = document.createElement('td');
+                    yearCell.textContent = movie.year;
                     
                     const durationCell = document.createElement('td');
                     durationCell.textContent = movie.duration;
                     
                     if (this.isSearchActive && this.searchResults.includes(index)) {
                         this.highlightSearchTerm(movieCell, movie.movie);
-                        this.highlightSearchTerm(actorCell, movie.actor);
-                        this.highlightSearchTerm(yearCell, movie.year.toString());
-                        this.highlightSearchTerm(genreCell, movie.genre);
                         this.highlightSearchTerm(directorCell, movie.director);
+                        this.highlightSearchTerm(actorCell, movie.actor);
+                        this.highlightSearchTerm(genreCell, movie.genre);
+                        this.highlightSearchTerm(yearCell, movie.year.toString());
                         this.highlightSearchTerm(durationCell, movie.duration);
                     }
                     
                     row.appendChild(movieCell);
-                    row.appendChild(actorCell);
-                    row.appendChild(yearCell);
-                    row.appendChild(genreCell);
                     row.appendChild(directorCell);
+                    row.appendChild(actorCell);
+                    row.appendChild(genreCell);
+                    row.appendChild(yearCell);
                     row.appendChild(durationCell);
                     
                     row.addEventListener('click', () => {
@@ -993,10 +993,10 @@
             
             fillFormWithMovieData(movie) {
                 this.movieNameInput.value = movie.movie;
-                this.actorNameInput.value = movie.actor;
-                this.yearInput.value = movie.year;
-                this.genreInput.value = movie.genre;
                 this.directorInput.value = movie.director;
+                this.actorNameInput.value = movie.actor;
+                this.genreInput.value = movie.genre;
+                this.yearInput.value = movie.year;
                 this.durationInput.value = movie.duration;
             }
             
@@ -1019,10 +1019,10 @@
                     
                     this.movies.forEach((movie, index) => {
                         if (movie.movie.toLowerCase().includes(this.searchTerm) || 
-                            movie.actor.toLowerCase().includes(this.searchTerm) || 
-                            movie.year.toString().includes(this.searchTerm) ||
-                            movie.genre.toLowerCase().includes(this.searchTerm) ||
                             movie.director.toLowerCase().includes(this.searchTerm) ||
+                            movie.actor.toLowerCase().includes(this.searchTerm) || 
+                            movie.genre.toLowerCase().includes(this.searchTerm) ||
+                            movie.year.toString().includes(this.searchTerm) ||
                             movie.duration.toLowerCase().includes(this.searchTerm)) {
                             this.searchResults.push(index);
                         }
@@ -1152,10 +1152,10 @@
                                     'year' in item) {
                                     const movieData = {
                                         movie: item.movie,
-                                        actor: item.actor,
-                                        year: item.year,
-                                        genre: item.genre || '',
                                         director: item.director || '',
+                                        actor: item.actor,
+                                        genre: item.genre || '',
+                                        year: item.year,
                                         duration: item.duration || ''
                                     };
                                     validMovies.push(movieData);
@@ -1222,10 +1222,10 @@
                 
                 this.movies.forEach((movie, index) => {
                     txtContent += `${index + 1}. Título: ${movie.movie}\n`;
-                    txtContent += `   Ator: ${movie.actor}\n`;
-                    txtContent += `   Ano: ${movie.year}\n`;
-                    txtContent += `   Género: ${movie.genre}\n`;
                     txtContent += `   Realizador: ${movie.director}\n`;
+                    txtContent += `   Ator: ${movie.actor}\n`;
+                    txtContent += `   Género: ${movie.genre}\n`;
+                    txtContent += `   Ano: ${movie.year}\n`;
                     txtContent += `   Duração: ${movie.duration}\n\n`;
                 });
                 
@@ -1261,10 +1261,10 @@
                         if (Array.isArray(data)) {
                             this.movies = data.map(movie => ({
                                 movie: movie.movie,
-                                actor: movie.actor,
-                                year: movie.year,
-                                genre: movie.genre || '',
                                 director: movie.director || '',
+                                actor: movie.actor,
+                                genre: movie.genre || '',
+                                year: movie.year,
                                 duration: movie.duration || ''
                             }));
                             this.updateTable();
