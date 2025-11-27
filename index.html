@@ -1155,49 +1155,45 @@
                 this.durationInput.value = movie.duration;
             }
             
-            searchMovies() {
-                this.searchTerm = this.searchInput.value.trim().toLowerCase();
-                if (!this.searchTerm) {
-                    this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
-                    return;
-                }
-                
-                if (this.lastSearchTerm === this.searchTerm && this.isSearchActive) {
-                    if (this.searchResults.length === 0) {
-                        this.showAlert('Nenhum resultado encontrado.', 'info');
-                        this.currentSearchIndex = -1;
-                        return;
-                    }
-                } else {
-                    this.lastSearchTerm = this.searchTerm;
-                    this.searchResults = [];
-                    
-                    this.movies.forEach((movie, index) => {
-                        if (movie.movie.toLowerCase().includes(this.searchTerm) || 
-                            movie.director.toLowerCase().includes(this.searchTerm) ||
-                            movie.actor.toLowerCase().includes(this.searchTerm) || 
-                            movie.genre.toLowerCase().includes(this.searchTerm) ||
-                            movie.year.toString().includes(this.searchTerm) ||
-                            movie.duration.toLowerCase().includes(this.searchTerm)) {
-                            this.searchResults.push(index);
-                        }
-                    });
-                    
-                    if (this.searchResults.length === 0) {
-                        this.showAlert('Nenhum resultado encontrado.', 'info');
-                        this.currentSearchIndex = -1;
-                        this.isSearchActive = false;
-                        this.hideSearchNavigation();
-                        return;
-                    }
-                    
-                    this.currentSearchIndex = 0;
-                    this.isSearchActive = true;
-                    this.showSearchNavigation();
-                }
-                
-                this.highlightSearchResult();
-            }
+			searchMovies() {
+				this.searchTerm = this.searchInput.value.trim().toLowerCase();
+				if (!this.searchTerm) {
+					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
+					return;
+				}
+				
+				// SEMPRE realizar uma nova pesquisa e mostrar a barra de navegação
+				this.lastSearchTerm = this.searchTerm;
+				this.searchResults = [];
+				
+				this.movies.forEach((movie, index) => {
+					if (movie.movie.toLowerCase().includes(this.searchTerm) || 
+						movie.director.toLowerCase().includes(this.searchTerm) ||
+						movie.actor.toLowerCase().includes(this.searchTerm) || 
+						movie.genre.toLowerCase().includes(this.searchTerm) ||
+						movie.year.toString().includes(this.searchTerm) ||
+						movie.duration.toLowerCase().includes(this.searchTerm)) {
+						this.searchResults.push(index);
+					}
+				});
+				
+				if (this.searchResults.length === 0) {
+					this.showAlert('Nenhum resultado encontrado.', 'info');
+					this.currentSearchIndex = -1;
+					this.isSearchActive = false;
+					this.hideSearchNavigation();
+					return;
+				}
+				
+				this.currentSearchIndex = 0;
+				this.isSearchActive = true;
+				
+				// CORREÇÃO: SEMPRE mostrar a barra de navegação quando houver resultados
+				// mesmo que seja a mesma pesquisa que foi fechada anteriormente
+				this.showSearchNavigation();
+				
+				this.highlightSearchResult();
+			}
             
             highlightSearchResult() {
                 if (this.searchResults.length === 0 || this.currentSearchIndex < 0) return;
