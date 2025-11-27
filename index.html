@@ -17,6 +17,7 @@
             color: #333;
             line-height: 1.4;
             padding: 15px;
+            padding-bottom: 80px; /* Espaço para a barra fixa de pesquisa */
         }
         
         .container {
@@ -120,7 +121,7 @@
         
         .search-input-container {
             flex: 1;
-            max-width: 400px;
+            max-width: 500px;
         }
         
         .search-buttons {
@@ -176,6 +177,17 @@
         
         .btn-info:hover {
             background-color: #138496;
+        }
+        
+        .btn-close {
+            background-color: #6c757d;
+            color: white;
+            width: 36px;
+            min-width: 36px;
+        }
+        
+        .btn-close:hover {
+            background-color: #5a6268;
         }
         
         .table-container {
@@ -302,6 +314,45 @@
             display: none;
         }
         
+        /* NOVA BARRA FIXA PARA NAVEGAÇÃO DE PESQUISA */
+        .search-navigation-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        
+        .search-navigation-bar.hidden {
+            transform: translateY(100%);
+        }
+        
+        .search-info {
+            font-size: 0.9rem;
+            color: #495057;
+            font-weight: 500;
+            flex: 1;
+            margin-right: 15px;
+        }
+        
+        .search-nav-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .search-nav-buttons button {
+            min-width: 100px;
+        }
+        
         /* DESKTOP – Layout corrigido */
         @media (min-width: 769px) {
             /* Linha principal que contém pesquisa + botões */
@@ -335,7 +386,7 @@
                 min-width: 320px;
             }
 
-            /* CORREÇÃO CRÍTICA: Botões Anterior/Seguinte PERFEITAMENTE alinhados */
+            /* CORREÇÃO: Agora só tem um botão Pesquisar */
             .search-buttons {
                 display: flex;
                 gap: 13px;
@@ -561,12 +612,35 @@
                 /* ALTERAÇÃO: Aumentei a altura máxima para 600px para mostrar mais filmes */
                 max-height: 600px;
             }
+            
+            /* Ajuste para a barra de navegação no mobile */
+            .search-navigation-bar {
+                padding: 8px 10px;
+            }
+            
+            .search-info {
+                font-size: 0.8rem;
+                margin-right: 10px;
+            }
+            
+            .search-nav-buttons button {
+                min-width: 80px;
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+            
+            .btn-close {
+                width: 32px;
+                min-width: 32px;
+                height: 32px;
+            }
         }
         
         /* Layout específico para Android - telas menores */
         @media (max-width: 480px) {
             body {
                 padding: 8px;
+                padding-bottom: 70px;
             }
             
             .container {
@@ -594,6 +668,32 @@
             .search-buttons {
                 width: 100%;
                 justify-content: center;
+            }
+            
+            .search-navigation-bar {
+                padding: 6px 8px;
+            }
+            
+            .search-info {
+                font-size: 0.75rem;
+                margin-right: 8px;
+            }
+            
+            .search-nav-buttons {
+                gap: 6px;
+            }
+            
+            .search-nav-buttons button {
+                min-width: 70px;
+                font-size: 0.75rem;
+                padding: 5px 6px;
+            }
+            
+            .btn-close {
+                width: 30px;
+                min-width: 30px;
+                height: 30px;
+                font-size: 0.7rem;
             }
         }
 
@@ -671,8 +771,8 @@
                             <input type="text" id="search-input" placeholder="Digite um termo para pesquisar">
                         </div>
                         <div class="search-buttons">
-                            <button class="btn-info" id="prev-result">Anterior</button>
-                            <button class="btn-info" id="next-result">Seguinte</button>
+                            <!-- ALTERAÇÃO: Substituído por um único botão Pesquisar -->
+                            <button class="btn-info" id="search-button">Pesquisar</button>
                         </div>
                     </div>
                 </div>
@@ -727,6 +827,18 @@
         
         <input type="file" id="file-input" class="file-input" accept=".json">
     </div>
+    
+    <!-- NOVA BARRA FIXA PARA NAVEGAÇÃO DE PESQUISA -->
+    <div class="search-navigation-bar hidden" id="search-navigation-bar">
+        <div class="search-info" id="search-info">
+            Nenhuma pesquisa ativa
+        </div>
+        <div class="search-nav-buttons">
+            <button class="btn-info" id="prev-result-fixed">Anterior</button>
+            <button class="btn-info" id="next-result-fixed">Seguinte</button>
+            <button class="btn-close" id="close-search-nav" title="Fechar barra de pesquisa">×</button>
+        </div>
+    </div>
 
     <script>
         class MovieManager {
@@ -757,8 +869,7 @@
                 this.yearInput = document.getElementById('year');
                 this.durationInput = document.getElementById('duration');
                 this.searchInput = document.getElementById('search-input');
-                this.prevResultButton = document.getElementById('prev-result');
-                this.nextResultButton = document.getElementById('next-result');
+                this.searchButton = document.getElementById('search-button'); // Novo elemento
                 this.moviesTbody = document.getElementById('movies-tbody');
                 this.alertContainer = document.getElementById('alert-container');
                 this.fileInput = document.getElementById('file-input');
@@ -766,6 +877,13 @@
                 this.collapsibleHeader = document.getElementById('collapsible-header');
                 this.collapsibleContent = document.getElementById('collapsible-content');
                 this.toggleIcon = document.getElementById('toggle-icon');
+                
+                // Novos elementos para a barra de navegação fixa
+                this.searchNavigationBar = document.getElementById('search-navigation-bar');
+                this.searchInfo = document.getElementById('search-info');
+                this.prevResultFixed = document.getElementById('prev-result-fixed');
+                this.nextResultFixed = document.getElementById('next-result-fixed');
+                this.closeSearchNav = document.getElementById('close-search-nav');
             }
             
             attachEventListeners() {
@@ -783,8 +901,14 @@
                 document.getElementById('export-json-mobile').addEventListener('click', () => this.exportJson());
                 document.getElementById('export-txt-mobile').addEventListener('click', () => this.exportTxt());
                 
-                this.prevResultButton.addEventListener('click', () => this.previousResult());
-                this.nextResultButton.addEventListener('click', () => this.nextResult());
+                // ALTERAÇÃO: Agora só temos o botão Pesquisar
+                this.searchButton.addEventListener('click', () => this.searchMovies());
+                
+                // Novos listeners para os botões fixos
+                this.prevResultFixed.addEventListener('click', () => this.previousResult());
+                this.nextResultFixed.addEventListener('click', () => this.nextResult());
+                this.closeSearchNav.addEventListener('click', () => this.closeSearchNavigation());
+                
                 this.searchInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') this.searchMovies();
                 });
@@ -846,7 +970,35 @@
                 this.searchTerm = '';
                 this.isSearchActive = false;
                 this.updateTable();
+                this.hideSearchNavigation();
                 document.title = "Gerenciador de Filmes";
+            }
+            
+            // Mostrar/ocultar a barra de navegação de pesquisa
+            showSearchNavigation() {
+                this.searchNavigationBar.classList.remove('hidden');
+                this.updateSearchInfo();
+            }
+            
+            hideSearchNavigation() {
+                this.searchNavigationBar.classList.add('hidden');
+            }
+            
+            // Fechar a barra de navegação (mantém a pesquisa ativa)
+            closeSearchNavigation() {
+                this.hideSearchNavigation();
+                // Não limpa a pesquisa, apenas esconde a barra
+                // O usuário pode reativá-la fazendo uma nova pesquisa
+            }
+            
+            updateSearchInfo() {
+                if (this.searchResults.length > 0 && this.currentSearchIndex >= 0) {
+                    this.searchInfo.textContent = `Resultado ${this.currentSearchIndex + 1} de ${this.searchResults.length} para "${this.searchTerm}"`;
+                } else if (this.searchResults.length > 0) {
+                    this.searchInfo.textContent = `${this.searchResults.length} resultados para "${this.searchTerm}"`;
+                } else {
+                    this.searchInfo.textContent = "Nenhuma pesquisa ativa";
+                }
             }
             
 			addMovie() {
@@ -1035,11 +1187,13 @@
                         this.showAlert('Nenhum resultado encontrado.', 'info');
                         this.currentSearchIndex = -1;
                         this.isSearchActive = false;
+                        this.hideSearchNavigation();
                         return;
                     }
                     
                     this.currentSearchIndex = 0;
                     this.isSearchActive = true;
+                    this.showSearchNavigation();
                 }
                 
                 this.highlightSearchResult();
@@ -1049,6 +1203,7 @@
                 if (this.searchResults.length === 0 || this.currentSearchIndex < 0) return;
                 
                 this.updateTable();
+                this.updateSearchInfo();
                 
                 const movieIndex = this.searchResults[this.currentSearchIndex];
                 const movie = this.movies[movieIndex];
