@@ -922,6 +922,15 @@
                 this.collapsibleHeader.addEventListener('click', () => this.toggleCollapse());
             }
             
+            // FUNÇÃO ADICIONADA: Normalização de strings para ordenação correta
+            normalizeString(text) {
+                if (!text) return "";
+                // Remove acentos e converte para minúsculas
+                return text.toString().toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '');
+            }
+            
             toggleCollapse() {
                 this.isCollapsed = !this.isCollapsed;
                 
@@ -1166,13 +1175,16 @@
 				this.lastSearchTerm = this.searchTerm;
 				this.searchResults = [];
 				
+				// CORREÇÃO: Usar normalização para lidar com acentos na pesquisa
+				const normalizedSearchTerm = this.normalizeString(this.searchTerm);
+				
 				this.movies.forEach((movie, index) => {
-					if (movie.movie.toLowerCase().includes(this.searchTerm) || 
-						movie.director.toLowerCase().includes(this.searchTerm) ||
-						movie.actor.toLowerCase().includes(this.searchTerm) || 
-						movie.genre.toLowerCase().includes(this.searchTerm) ||
+					if (this.normalizeString(movie.movie).includes(normalizedSearchTerm) || 
+						this.normalizeString(movie.director).includes(normalizedSearchTerm) ||
+						this.normalizeString(movie.actor).includes(normalizedSearchTerm) || 
+						this.normalizeString(movie.genre).includes(normalizedSearchTerm) ||
 						movie.year.toString().includes(this.searchTerm) ||
-						movie.duration.toLowerCase().includes(this.searchTerm)) {
+						this.normalizeString(movie.duration).includes(normalizedSearchTerm)) {
 						this.searchResults.push(index);
 					}
 				});
@@ -1252,6 +1264,7 @@
                 }
             }
             
+            // CORREÇÃO: Função sortColumn atualizada para usar normalização
             sortColumn(column) {
                 if (this.currentSortColumn === column) {
                     this.sortReverse = !this.sortReverse;
@@ -1272,9 +1285,10 @@
                         return this.sortReverse ? b[column] - a[column] : a[column] - b[column];
                     });
                 } else {
+                    // CORREÇÃO: Usar a função de normalização para ordenação correta
                     this.movies.sort((a, b) => {
-                        const aValue = String(a[column] || '').toLowerCase();
-                        const bValue = String(b[column] || '').toLowerCase();
+                        const aValue = this.normalizeString(a[column] || '');
+                        const bValue = this.normalizeString(b[column] || '');
                         
                         if (aValue < bValue) return this.sortReverse ? 1 : -1;
                         if (aValue > bValue) return this.sortReverse ? -1 : 1;
