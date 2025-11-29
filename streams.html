@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canais de TV Online</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(16, 42, 67, 0.6);
+            border-radius: 15px;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .channel-card {
+            background: rgba(30, 60, 114, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        .channel-link {
+            background: #007cf0;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .fullscreen-btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📺 Canais de TV Online</h1>
+        </header>
+        
+        <div class="channels-grid">
+            <div class="channel-card">
+                <div>SPORT TV 1</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream1">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>SPORT TV 2</div>
+                <button class="channel-link" data-url="http://btvsports.lol/sporttv2">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>SPORT TV 3</div>
+                <button class="channel-link" data-url="http://btvsports.lol/sporttv3">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>SPORT TV 4</div>
+                <button class="channel-link" data-url="http://btvsports.lol/sporttv4">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>SPORT TV 5</div>
+                <button class="channel-link" data-url="http://btvsports.lol/sporttv5">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>DAZN 1</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream9">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>DAZN 2</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream5">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>DAZN 3</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream3">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>BTV</div>
+                <button class="channel-link" data-url="http://btvsports.lol/benfica">Assistir</button>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="fullscreen-btn" data-url="http://btvsports.lol/">
+                📋 VER TODOS OS STREAMS
+            </button>
+        </div>
+        
+        <footer>
+            <p>© 2025 Canais de TV Online</p>
+        </footer>
+    </div>
+    <script>
+        // Função para carregar URLs dentro do WebView
+        function loadInWebView(url) {
+            console.log("Tentando carregar URL: " + url);
+            
+            // Verifica se a ponte Android está disponível (dentro do WebView)
+            if (typeof Android !== 'undefined' && Android.loadUrl) {
+                console.log("Usando ponte Android");
+                Android.loadUrl(url);
+            } else {
+                // Fallback: redireciona normalmente
+                console.log("Fallback: redirecionando normalmente");
+                window.location.href = url;
+            }
+        }
+        
+        // Função para adicionar event listeners quando a página carrega
+        function setupEventListeners() {
+            console.log("Configurando event listeners...");
+            
+            // Para botões com a classe 'channel-link'
+            var channelButtons = document.querySelectorAll('.channel-link');
+            console.log("Encontrados " + channelButtons.length + " botões de canal");
+            
+            channelButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var url = this.getAttribute('data-url');
+                    console.log("Clicado no canal: " + url);
+                    loadInWebView(url);
+                });
+            });
+            
+            // Para o botão "Ver Todos os Streams"
+            var streamsButton = document.querySelector('.fullscreen-btn');
+            if (streamsButton) {
+                streamsButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var url = this.getAttribute('data-url');
+                    console.log("Clicado em Ver Todos os Streams: " + url);
+                    loadInWebView(url);
+                });
+            }
+            
+            console.log("Event listeners configurados");
+        }
+        
+        // Executa quando a página carrega
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM carregado");
+            setupEventListeners();
+        });
+    </script>
+</body>
+</html>
