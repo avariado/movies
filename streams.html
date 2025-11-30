@@ -48,16 +48,6 @@
             cursor: pointer;
             margin-top: 10px;
         }
-        .fullscreen-btn {
-            background: #ff6b6b;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 25px;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px;
-        }
         footer {
             text-align: center;
             margin-top: 40px;
@@ -69,52 +59,93 @@
     <div class="container">
         <header>
             <h1>📺 Canais de TV Online</h1>
-            <br>
         </header>
         
         <div class="channels-grid">
             <div class="channel-card">
                 <div>SPORT TV 1</div>
-                <button class="channel-link" data-url="http://btvsports.lol/stream1">Assistir</button>
+                <button class="channel-link" data-url="https://btvsports.lol/sporttv1">Assistir</button>
             </div>
             <div class="channel-card">
                 <div>SPORT TV 2</div>
-                <button class="channel-link" data-url="http://btvsports.lol/sporttv2">Assistir</button>
+                <button class="channel-link" data-url="https://btvsports.lol/sporttv2">Assistir</button>
             </div>
             <div class="channel-card">
                 <div>SPORT TV 3</div>
-                <button class="channel-link" data-url="http://btvsports.lol/sporttv3">Assistir</button>
+                <button class="channel-link" data-url="https://btvsports.lol/sporttv3">Assistir</button>
             </div>
             <div class="channel-card">
                 <div>SPORT TV 4</div>
-                <button class="channel-link" data-url="http://btvsports.lol/sporttv4">Assistir</button>
+                <button class="channel-link" data-url="https://btvsports.lol/sporttv4">Assistir</button>
             </div>
             <div class="channel-card">
                 <div>SPORT TV 5</div>
-                <button class="channel-link" data-url="http://btvsports.lol/sporttv5">Assistir</button>
+                <button class="channel-link" data-url="https://btvsports.lol/sporttv5">Assistir</button>
             </div>
             <div class="channel-card">
-                <div>DAZN 1</div>
-                <button class="channel-link" data-url="http://btvsports.lol/stream9">Assistir</button>
+                <div>SPORT TV 6</div>
+                <button class="channel-link" data-url="https://btvsports.lol/sporttv6">Assistir</button>
             </div>
             <div class="channel-card">
-                <div>DAZN 2</div>
-                <button class="channel-link" data-url="http://btvsports.lol/stream5">Assistir</button>
+                <div>SPORT TV 7</div>
+                <button class="channel-link" data-url="https://btvsports.lol/sporttv7">Assistir</button>
             </div>
             <div class="channel-card">
-                <div>DAZN 3</div>
+                <div>SPORT TV 8</div>
+                <button class="channel-link" data-url="https://btvsports.lol/sporttv8">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>SPORT TV 9</div>
+                <button class="channel-link" data-url="https://btvsports.lol/sporttv9">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>STREAM 1</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream1">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>STREAM 2</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream2">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>STREAM 3</div>
                 <button class="channel-link" data-url="http://btvsports.lol/stream3">Assistir</button>
             </div>
             <div class="channel-card">
-                <div>BTV</div>
-                <button class="channel-link" data-url="http://btvsports.lol/benfica">Assistir</button>
+                <div>STREAM 4</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream4">Assistir</button>
             </div>
-        </div>
-        
-        <div style="text-align: center; margin: 30px 0;">
-            <button class="fullscreen-btn" data-url="http://btvsports.lol/">
-                📋 VER TODOS OS STREAMS
-            </button>
+            <div class="channel-card">
+                <div>STREAM 5</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream5">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>STREAM 6</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream6">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>STREAM 7</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream7">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>STREAM 8</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream8">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>STREAM 9</div>
+                <button class="channel-link" data-url="http://btvsports.lol/stream9">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>BTV</div>
+                <button class="channel-link" data-url="https://btvsports.lol/benfica">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>HOME 1</div>
+                <button class="channel-link" data-url="https://btvsports.lol/">Assistir</button>
+            </div>
+            <div class="channel-card">
+                <div>HOME 2</div>
+                <button class="channel-link" data-url="http://www.btvsports.pw/">Assistir</button>
+            </div>
         </div>
         
         <footer>
@@ -153,17 +184,6 @@
                     loadInWebView(url);
                 });
             });
-            
-            // Para o botão "Ver Todos os Streams"
-            var streamsButton = document.querySelector('.fullscreen-btn');
-            if (streamsButton) {
-                streamsButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    var url = this.getAttribute('data-url');
-                    console.log("Clicado em Ver Todos os Streams: " + url);
-                    loadInWebView(url);
-                });
-            }
             
             console.log("Event listeners configurados");
         }
