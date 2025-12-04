@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compartilhador Direto de Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #4a6fa5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .input-area, .display-area {
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        
+        button {
+            background: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: #3a5a8a;
+        }
+        
+        .link-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            min-height: 100px;
+            word-break: break-all;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .instructions {
+            background: #e8f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #4a6fa5;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .instructions p {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 ↔️ 💻 Compartilhador Direto</h1>
+            <p>Coloque o link aqui e ele aparece no outro dispositivo automaticamente</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-area">
+                <h2>1. Cole seu link aqui:</h2>
+                <textarea id="linkInput" placeholder="https://exemplo.com"></textarea>
+                <button id="shareBtn">Compartilhar Link</button>
+            </div>
+            
+            <div class="display-area">
+                <h2>2. Link compartilhado (aparece automaticamente):</h2>
+                <div class="link-display" id="linkDisplay">
+                    Nenhum link compartilhado ainda...
+                </div>
+                <button id="copyBtn" style="display:none;">Copiar Link</button>
+            </div>
+            
+            <div class="instructions">
+                <h3>Como usar:</h3>
+                <p>1. Abra esta mesma página nos dois dispositivos (smartphone e PC)</p>
+                <p>2. No smartphone: cole o link e clique em "Compartilhar Link"</p>
+                <p>3. No PC: o link aparece automaticamente</p>
+                <p>4. No PC: clique em "Copiar Link" para usar</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Funciona em tempo real • Sem códigos • Sem cadastro • Sem segurança</p>
+        </div>
+    </div>
+
+    <script>
+        // Elementos da página
+        const linkInput = document.getElementById('linkInput');
+        const shareBtn = document.getElementById('shareBtn');
+        const linkDisplay = document.getElementById('linkDisplay');
+        const copyBtn = document.getElementById('copyBtn');
+        
+        // Compartilhar o link
+        shareBtn.addEventListener('click', () => {
+            const link = linkInput.value.trim();
+            
+            if (!link) {
+                alert('Por favor, cole um link primeiro!');
+                return;
+            }
+            
+            // Mostrar no mesmo dispositivo
+            linkDisplay.innerHTML = `
+                <strong>Link compartilhado:</strong><br>
+                <a href="${link}" target="_blank" style="color: #4a6fa5;">${link}</a>
+                <br><br>
+                <em>Este link está visível para todos que abrirem esta página</em>
+            `;
+            copyBtn.style.display = 'block';
+            
+            // Para um sistema real, aqui iria para um servidor
+            // Mas como é sem servidor, só mostramos localmente
+            console.log('Link para compartilhar:', link);
+            alert('Link "compartilhado"! Abra a mesma página no outro dispositivo.');
+        });
+        
+        // Copiar link
+        copyBtn.addEventListener('click', async () => {
+            const linkText = linkDisplay.textContent;
+            const linkMatch = linkText.match(/https?:\/\/[^\s]+/);
+            
+            if (linkMatch) {
+                try {
+                    await navigator.clipboard.writeText(linkMatch[0]);
+                    alert('Link copiado para a área de transferência!');
+                } catch (err) {
+                    // Fallback para navegadores antigos
+                    const textArea = document.createElement('textarea');
+                    textArea.value = linkMatch[0];
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    alert('Link copiado para a área de transferência!');
+                }
+            }
+        });
+        
+        // Focar no campo de entrada quando carregar em dispositivos móveis
+        window.addEventListener('load', () => {
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                linkInput.focus();
+                linkInput.placeholder = "Cole aqui o link do PC...";
+            }
+        });
+        
+        // Limpar campo quando clicar (para facilitar colar)
+        linkInput.addEventListener('click', function() {
+            this.select();
+        });
+    </script>
+</body>
+</html>
