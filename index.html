@@ -179,6 +179,24 @@
             background-color: #138496;
         }
         
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
         .btn-close {
             background-color: #6c757d;
             color: white;
@@ -852,13 +870,18 @@
                 this.searchTerm = '';
                 this.isCollapsed = true;
                 this.isSearchActive = false;
+                this.hasUnsavedChanges = false; // Nova propriedade para controlar alterações não salvas
+                this.originalMoviesData = null; // Para comparar com o estado atual
                 
                 this.initializeElements();
                 this.attachEventListeners();
                 this.autoLoadFromLocalStorage();
-				
-				this.collapsibleContent.classList.add('collapsed');
-				this.toggleIcon.textContent = '+';
+                
+                // Salvar o estado original para comparação
+                this.saveOriginalState();
+                
+                this.collapsibleContent.classList.add('collapsed');
+                this.toggleIcon.textContent = '+';
             }
             
             initializeElements() {
@@ -884,6 +907,10 @@
                 this.prevResultFixed = document.getElementById('prev-result-fixed');
                 this.nextResultFixed = document.getElementById('next-result-fixed');
                 this.closeSearchNav = document.getElementById('close-search-nav');
+                
+                // Elementos dos botões de exportação
+                this.exportJsonButton = document.getElementById('export-json');
+                this.exportJsonMobileButton = document.getElementById('export-json-mobile');
             }
             
             attachEventListeners() {
@@ -920,6 +947,70 @@
                 });
                 
                 this.collapsibleHeader.addEventListener('click', () => this.toggleCollapse());
+                
+                // Adicionar listener para detectar alterações nos campos de entrada
+                const formInputs = [
+                    this.movieNameInput,
+                    this.directorInput,
+                    this.actorNameInput,
+                    this.genreInput,
+                    this.yearInput,
+                    this.durationInput
+                ];
+                
+                formInputs.forEach(input => {
+                    input.addEventListener('input', () => {
+                        // Marcar que há alterações não salvas
+                        this.checkForUnsavedChanges();
+                    });
+                });
+            }
+            
+            // Função para salvar o estado original dos dados
+            saveOriginalState() {
+                this.originalMoviesData = JSON.stringify(this.movies);
+            }
+            
+            // Função para verificar se há alterações não salvas
+            checkForUnsavedChanges() {
+                // Primeiro, verifica se há um filme sendo editado no formulário
+                const hasFormData = this.movieNameInput.value.trim() || 
+                                  this.directorInput.value.trim() || 
+                                  this.actorNameInput.value.trim() || 
+                                  this.genreInput.value.trim() || 
+                                  this.yearInput.value.trim() || 
+                                  this.durationInput.value.trim();
+                
+                // Se há dados no formulário, considera como alteração não salva
+                if (hasFormData) {
+                    this.setUnsavedChanges(true);
+                    return;
+                }
+                
+                // Verifica se os dados atuais são diferentes dos originais
+                const currentMoviesData = JSON.stringify(this.movies);
+                const hasChanged = currentMoviesData !== this.originalMoviesData;
+                
+                this.setUnsavedChanges(hasChanged);
+            }
+            
+            // Função para definir o estado de alterações não salvas
+            setUnsavedChanges(hasUnsaved) {
+                this.hasUnsavedChanges = hasUnsaved;
+                this.updateExportButtonColor();
+            }
+            
+            // Função para atualizar a cor do botão de exportação
+            updateExportButtonColor() {
+                if (this.hasUnsavedChanges) {
+                    // Muda para vermelho quando há alterações não salvas
+                    this.exportJsonButton.className = 'btn-danger';
+                    this.exportJsonMobileButton.className = 'btn-danger';
+                } else {
+                    // Volta para a cor original quando não há alterações
+                    this.exportJsonButton.className = 'btn-info';
+                    this.exportJsonMobileButton.className = 'btn-info';
+                }
             }
             
             // FUNÇÃO ADICIONADA: Normalização de strings para ordenação correta
@@ -971,6 +1062,9 @@
                 this.selectedRow = null;
                 this.clearTableSelection();
                 this.clearSearch();
+                
+                // Verificar alterações não salvas após limpar campos
+                this.checkForUnsavedChanges();
             }
             
             clearSearch() {
@@ -1010,51 +1104,54 @@
                 }
             }
             
-			addMovie() {
-				const movie = this.movieNameInput.value.trim();
-				const director = this.directorInput.value.trim();
-				const actor = this.actorNameInput.value.trim();
-				const genre = this.genreInput.value.trim();
-				const yearStr = this.yearInput.value.trim();
-				const duration = this.durationInput.value.trim();
-				
-				if (!movie) {
-					this.showAlert('Por favor, preencha o campo obrigatório: Título do filme.', 'warning');
-					return;
-				}
-				
-				if (duration && !this.validateDuration(duration)) {
-					this.showAlert('Formato de duração inválido. Use o formato: 1h 30m, 2h, 45m', 'warning');
-					return;
-				}
-				
-				let year = "";
-				if (yearStr) {
-					try {
-						year = parseInt(yearStr);
-						if (isNaN(year) || year < 1888 || year > 2100) {
-							throw new Error('Ano inválido');
-						}
-					} catch (error) {
-						this.showAlert('Por favor, insira um ano válido (entre 1888 e 2100) ou deixe em branco.', 'warning');
-						return;
-					}
-				}
-				
-				const movieData = {
-					movie: movie,
-					director: director,
-					actor: actor,
-					genre: genre,
-					year: year,
-					duration: duration
-				};
-				
-				this.movies.push(movieData);
-				this.updateTable();
-				this.clearFields();
-				this.saveToLocalStorage();
-			}
+            addMovie() {
+                const movie = this.movieNameInput.value.trim();
+                const director = this.directorInput.value.trim();
+                const actor = this.actorNameInput.value.trim();
+                const genre = this.genreInput.value.trim();
+                const yearStr = this.yearInput.value.trim();
+                const duration = this.durationInput.value.trim();
+                
+                if (!movie) {
+                    this.showAlert('Por favor, preencha o campo obrigatório: Título do filme.', 'warning');
+                    return;
+                }
+                
+                if (duration && !this.validateDuration(duration)) {
+                    this.showAlert('Formato de duração inválido. Use o formato: 1h 30m, 2h, 45m', 'warning');
+                    return;
+                }
+                
+                let year = "";
+                if (yearStr) {
+                    try {
+                        year = parseInt(yearStr);
+                        if (isNaN(year) || year < 1888 || year > 2100) {
+                            throw new Error('Ano inválido');
+                        }
+                    } catch (error) {
+                        this.showAlert('Por favor, insira um ano válido (entre 1888 e 2100) ou deixe em branco.', 'warning');
+                        return;
+                    }
+                }
+                
+                const movieData = {
+                    movie: movie,
+                    director: director,
+                    actor: actor,
+                    genre: genre,
+                    year: year,
+                    duration: duration
+                };
+                
+                this.movies.push(movieData);
+                this.updateTable();
+                this.clearFields();
+                this.saveToLocalStorage();
+                
+                // Marcar que há alterações não salvas
+                this.setUnsavedChanges(true);
+            }
             
             removeMovie() {
                 if (this.selectedRow === null) {
@@ -1068,6 +1165,9 @@
                     this.updateTable();
                     this.clearFields();
                     this.saveToLocalStorage();
+                    
+                    // Marcar que há alterações não salvas
+                    this.setUnsavedChanges(true);
                 }
             }
             
@@ -1162,50 +1262,53 @@
                 this.genreInput.value = movie.genre;
                 this.yearInput.value = movie.year;
                 this.durationInput.value = movie.duration;
+                
+                // Verificar alterações não salvas após preencher o formulário
+                this.checkForUnsavedChanges();
             }
             
-			searchMovies() {
-				this.searchTerm = this.searchInput.value.trim().toLowerCase();
-				if (!this.searchTerm) {
-					this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
-					return;
-				}
-				
-				// SEMPRE realizar uma nova pesquisa e mostrar a barra de navegação
-				this.lastSearchTerm = this.searchTerm;
-				this.searchResults = [];
-				
-				// CORREÇÃO: Usar normalização para lidar com acentos na pesquisa
-				const normalizedSearchTerm = this.normalizeString(this.searchTerm);
-				
-				this.movies.forEach((movie, index) => {
-					if (this.normalizeString(movie.movie).includes(normalizedSearchTerm) || 
-						this.normalizeString(movie.director).includes(normalizedSearchTerm) ||
-						this.normalizeString(movie.actor).includes(normalizedSearchTerm) || 
-						this.normalizeString(movie.genre).includes(normalizedSearchTerm) ||
-						movie.year.toString().includes(this.searchTerm) ||
-						this.normalizeString(movie.duration).includes(normalizedSearchTerm)) {
-						this.searchResults.push(index);
-					}
-				});
-				
-				if (this.searchResults.length === 0) {
-					this.showAlert('Nenhum resultado encontrado.', 'info');
-					this.currentSearchIndex = -1;
-					this.isSearchActive = false;
-					this.hideSearchNavigation();
-					return;
-				}
-				
-				this.currentSearchIndex = 0;
-				this.isSearchActive = true;
-				
-				// CORREÇÃO: SEMPRE mostrar a barra de navegação quando houver resultados
-				// mesmo que seja a mesma pesquisa que foi fechada anteriormente
-				this.showSearchNavigation();
-				
-				this.highlightSearchResult();
-			}
+            searchMovies() {
+                this.searchTerm = this.searchInput.value.trim().toLowerCase();
+                if (!this.searchTerm) {
+                    this.showAlert('Por favor, digite um termo para pesquisar.', 'warning');
+                    return;
+                }
+                
+                // SEMPRE realizar uma nova pesquisa e mostrar a barra de navegação
+                this.lastSearchTerm = this.searchTerm;
+                this.searchResults = [];
+                
+                // CORREÇÃO: Usar normalização para lidar com acentos na pesquisa
+                const normalizedSearchTerm = this.normalizeString(this.searchTerm);
+                
+                this.movies.forEach((movie, index) => {
+                    if (this.normalizeString(movie.movie).includes(normalizedSearchTerm) || 
+                        this.normalizeString(movie.director).includes(normalizedSearchTerm) ||
+                        this.normalizeString(movie.actor).includes(normalizedSearchTerm) || 
+                        this.normalizeString(movie.genre).includes(normalizedSearchTerm) ||
+                        movie.year.toString().includes(this.searchTerm) ||
+                        this.normalizeString(movie.duration).includes(normalizedSearchTerm)) {
+                        this.searchResults.push(index);
+                    }
+                });
+                
+                if (this.searchResults.length === 0) {
+                    this.showAlert('Nenhum resultado encontrado.', 'info');
+                    this.currentSearchIndex = -1;
+                    this.isSearchActive = false;
+                    this.hideSearchNavigation();
+                    return;
+                }
+                
+                this.currentSearchIndex = 0;
+                this.isSearchActive = true;
+                
+                // CORREÇÃO: SEMPRE mostrar a barra de navegação quando houver resultados
+                // mesmo que seja a mesma pesquisa que foi fechada anteriormente
+                this.showSearchNavigation();
+                
+                this.highlightSearchResult();
+            }
             
             highlightSearchResult() {
                 if (this.searchResults.length === 0 || this.currentSearchIndex < 0) return;
@@ -1334,6 +1437,10 @@
                             this.updateTable();
                             this.saveToLocalStorage();
                             this.showAlert(`${validMovies.length} filmes importados com sucesso!`);
+                            
+                            // Atualizar estado original após importação
+                            this.saveOriginalState();
+                            this.setUnsavedChanges(false);
                         } else {
                             this.showAlert('Formato de arquivo inválido. Esperado uma lista de filmes.', 'danger');
                         }
@@ -1362,6 +1469,9 @@
                     const success = Android.saveJSON(fileName, dataStr);
                     if (success) {
                         this.showAlert('Lista exportada com sucesso!');
+                        // Atualizar estado original após exportação
+                        this.saveOriginalState();
+                        this.setUnsavedChanges(false);
                     } else {
                         this.showAlert('Erro ao exportar lista.', 'danger');
                     }
@@ -1376,6 +1486,10 @@
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
                     this.showAlert('Lista exportada com sucesso!');
+                    
+                    // Atualizar estado original após exportação
+                    this.saveOriginalState();
+                    this.setUnsavedChanges(false);
                 }
             }
             
@@ -1436,6 +1550,10 @@
                                 duration: movie.duration || ''
                             }));
                             this.updateTable();
+                            
+                            // Atualizar estado original após carregar
+                            this.saveOriginalState();
+                            this.setUnsavedChanges(false);
                         }
                     }
                 } catch (error) {
