@@ -872,6 +872,7 @@
                 this.isSearchActive = false;
                 this.hasUnsavedChanges = false; // Nova propriedade para controlar alterações não salvas
                 this.originalMoviesData = null; // Para comparar com o estado atual
+                this.isEditingForm = false; // Nova propriedade para controlar se está editando formulário
                 
                 this.initializeElements();
                 this.attachEventListeners();
@@ -960,8 +961,19 @@
                 
                 formInputs.forEach(input => {
                     input.addEventListener('input', () => {
-                        // Marcar que há alterações não salvas
+                        // Marcar que está editando o formulário
+                        this.isEditingForm = true;
+                        // Verificar se há alterações reais nos dados
                         this.checkForUnsavedChanges();
+                    });
+                    
+                    // Adicionar listener para quando o campo perder o foco
+                    input.addEventListener('blur', () => {
+                        // Se o formulário estava sendo editado, verificar alterações
+                        if (this.isEditingForm) {
+                            this.checkForUnsavedChanges();
+                            this.isEditingForm = false;
+                        }
                     });
                 });
             }
@@ -973,21 +985,7 @@
             
             // Função para verificar se há alterações não salvas
             checkForUnsavedChanges() {
-                // Primeiro, verifica se há um filme sendo editado no formulário
-                const hasFormData = this.movieNameInput.value.trim() || 
-                                  this.directorInput.value.trim() || 
-                                  this.actorNameInput.value.trim() || 
-                                  this.genreInput.value.trim() || 
-                                  this.yearInput.value.trim() || 
-                                  this.durationInput.value.trim();
-                
-                // Se há dados no formulário, considera como alteração não salva
-                if (hasFormData) {
-                    this.setUnsavedChanges(true);
-                    return;
-                }
-                
-                // Verifica se os dados atuais são diferentes dos originais
+                // Primeiro, verifica se os dados atuais são diferentes dos originais
                 const currentMoviesData = JSON.stringify(this.movies);
                 const hasChanged = currentMoviesData !== this.originalMoviesData;
                 
@@ -1063,7 +1061,9 @@
                 this.clearTableSelection();
                 this.clearSearch();
                 
-                // Verificar alterações não salvas após limpar campos
+                // Limpar estado de edição do formulário
+                this.isEditingForm = false;
+                // Verificar alterações não salvas
                 this.checkForUnsavedChanges();
             }
             
@@ -1263,7 +1263,9 @@
                 this.yearInput.value = movie.year;
                 this.durationInput.value = movie.duration;
                 
-                // Verificar alterações não salvas após preencher o formulário
+                // Marcar que está preenchendo o formulário (não é uma edição do usuário)
+                this.isEditingForm = false;
+                // Verificar alterações não salvas
                 this.checkForUnsavedChanges();
             }
             
@@ -1400,6 +1402,10 @@
                 }
                 
                 this.updateTable();
+                
+                // A ordenação não conta como alteração não salva
+                // Verificar alterações reais
+                this.checkForUnsavedChanges();
             }
             
             importJson() {
